@@ -19,6 +19,7 @@ import Groundhog from './assets/Groundhog';
 
     // Create and add a container to the stage
     const container = new Container();
+
     app.stage.addChild(container);
 
     // Move the container to the center
