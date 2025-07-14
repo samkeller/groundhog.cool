@@ -1,4 +1,5 @@
 import { Application, Assets, Container, Sprite } from 'pixi.js';
+import { onScrollFn } from "./mouseFunctions"
 
 (async () => {
     if ((window as any).__pixi_playground_initialized) {
@@ -41,9 +42,11 @@ import { Application, Assets, Container, Sprite } from 'pixi.js';
     container.pivot.y = container.height / 2;
 
     // Listen for animate update
-    // app.ticker.add((time) => {
-    //     // Continuously rotate the container!
-    //     // * use delta to create frame-independent transform *
-    //     container.rotation -= 0.01 * time.deltaTime;
-    // });
+    app.ticker.add((time) => {
+        // Continuously rotate the container!
+        // * use delta to create frame-independent transform *
+    });
+
+    // Passe le container à la fonction de zoom avec la molette
+    document.addEventListener("wheel", (evt) => onScrollFn(evt, container))
 })();
