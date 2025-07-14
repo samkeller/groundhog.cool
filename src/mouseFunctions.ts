@@ -4,14 +4,16 @@ let lastScrollTop = 0
 const MIN_SCALE = 0.2;
 const MAX_SCALE = 4;
 
-
-const onScrollFn = (evt: WheelEvent, container: Container) => {
-    evt.preventDefault();
+//////////////////////////////////////////
+//                SCROLL                //
+//////////////////////////////////////////
+const onScrollFn = (e: WheelEvent, container: Container) => {
+    e.preventDefault();
     if (!container) return;
 
     // Utilise deltaY pour déterminer le zoom
     let scale = container.scale.x;
-    if (evt.deltaY < 0) {
+    if (e.deltaY < 0) {
         // Molette vers le haut = zoom in
         scale *= 1.1;
     } else {
@@ -22,4 +24,29 @@ const onScrollFn = (evt: WheelEvent, container: Container) => {
     container.scale.set(scale);
 }
 
-export { onScrollFn }
+//////////////////////////////////////////
+//                PANNING               //
+//////////////////////////////////////////
+
+let isDragging = false;
+let lastMousePosition = { x: 0, y: 0 };
+
+const onMouseDownFn = (e: MouseEvent) => {
+    e.preventDefault();
+    isDragging = true;
+    lastMousePosition = { x: e.clientX, y: e.clientY };
+};
+
+const onMouseMoveFn = (e: MouseEvent, container: Container) => {
+    if (!isDragging) return;
+    const dx = e.clientX - lastMousePosition.x;
+    const dy = e.clientY - lastMousePosition.y;
+    container.x += dx;
+    container.y += dy;
+    lastMousePosition = { x: e.clientX, y: e.clientY };
+};
+
+const onMouseUpFn = (e: MouseEvent, container: Container) => isDragging = false;
+
+
+export { onScrollFn, onMouseDownFn, onMouseMoveFn, onMouseUpFn }

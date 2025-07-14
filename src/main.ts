@@ -1,5 +1,5 @@
 import { Application, Assets, Container, Sprite } from 'pixi.js';
-import { onScrollFn } from "./mouseFunctions"
+import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions"
 
 (async () => {
     if ((window as any).__pixi_playground_initialized) {
@@ -48,5 +48,8 @@ import { onScrollFn } from "./mouseFunctions"
     });
 
     // Passe le container à la fonction de zoom avec la molette
-    document.addEventListener("wheel", (evt) => onScrollFn(evt, container))
+    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, container))
+    app.canvas.addEventListener("mousedown", (evt) => onMouseDownFn(evt))
+    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, container))
+    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, container))
 })();
