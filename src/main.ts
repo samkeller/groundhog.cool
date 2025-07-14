@@ -1,5 +1,6 @@
-import { Application, Assets, Container, Sprite } from 'pixi.js';
+import { Application, Assets, Container } from 'pixi.js';
 import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions"
+import Groundhog from './assets/Groundhog';
 
 (async () => {
     if ((window as any).__pixi_playground_initialized) {
@@ -21,25 +22,15 @@ import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFu
 
     app.stage.addChild(container);
 
-    // Load the bunny texture
-    const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
-
-    // Create a 5x5 grid of bunnies in the container
-    for (let i = 0; i < 25; i++) {
-        const bunny = new Sprite(texture);
-
-        bunny.x = (i % 5) * 40;
-        bunny.y = Math.floor(i / 5) * 40;
-        container.addChild(bunny);
-    }
-
     // Move the container to the center
     container.x = app.screen.width / 2;
     container.y = app.screen.height / 2;
 
-    // Center the bunny sprites in local container coordinates
-    container.pivot.x = container.width / 2;
-    container.pivot.y = container.height / 2;
+    const groundHogTexture = await Assets.load("assets/images/groundhog.png");
+
+    const groundHog = new Groundhog(groundHogTexture)
+    groundHog.position = { x: container.width / 2, y: container.height / 2 }
+    groundHog.draw(container)
 
     // Listen for animate update
     app.ticker.add((time) => {
