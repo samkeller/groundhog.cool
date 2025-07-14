@@ -32,6 +32,7 @@ export default abstract class Drawable {
         this.sprite.y = this.position.y;
         this.sprite.width = this.size.width;
         this.sprite.height = this.size.height;
+        this.sprite.rotation = this.rotation
         container.addChild(this.sprite);
     }
 }

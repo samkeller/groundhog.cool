@@ -19,7 +19,6 @@ import Groundhog from './assets/Groundhog';
 
     // Create and add a container to the stage
     const container = new Container();
-
     app.stage.addChild(container);
 
     // Move the container to the center
@@ -36,6 +35,7 @@ import Groundhog from './assets/Groundhog';
     app.ticker.add((time) => {
         // Continuously rotate the container!
         // * use delta to create frame-independent transform *
+        groundHog.draw(container)
     });
 
     // Passe le container à la fonction de zoom avec la molette
