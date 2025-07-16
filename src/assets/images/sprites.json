@@ -1,0 +1,36 @@
+{
+    "frames": {
+        "grass.png": {
+            "frame": {
+                "x": 0,
+                "y": 0,
+                "w": 16,
+                "h": 16
+            }
+        },
+        "water.png": {
+            "frame": {
+                "x": 16,
+                "y": 0,
+                "w": 16,
+                "h": 16
+            }
+        },
+        "mountain.png": {
+            "frame": {
+                "x": 32,
+                "y": 0,
+                "w": 16,
+                "h": 16
+            }
+        }
+    },
+    "meta": {
+        "image": "assets/images/sprites.png",
+        "size": {
+            "w": 2000,
+            "h": 2000
+        },
+        "scale": 1
+    }
+}

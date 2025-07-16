@@ -42,7 +42,6 @@ export default abstract class Drawable {
         this.sprite.y = this.position.y;
         this.sprite.width = this.size.width;
         this.sprite.height = this.size.height;
-        console.log(this.rotation)
         this.sprite.rotation = (this.rotation - 270) * Math.PI / 180;
         container.addChild(this.sprite);
     }

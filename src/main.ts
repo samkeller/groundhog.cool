@@ -1,8 +1,11 @@
 import { Application, Assets, Container } from 'pixi.js';
 import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions"
 import Groundhog from './assets/Groundhog';
+import getSimpleMap from './assets/maps/SimpleMap';
 
 (async () => {
+    const map = await getSimpleMap()
+
     if ((window as any).__pixi_playground_initialized) {
         // Déjà initialisé, on ne fait rien
         return;
@@ -12,15 +15,15 @@ import Groundhog from './assets/Groundhog';
     const app = new Application();
 
     // Initialize the application
-    await app.init({ background: '#1099bb', resizeTo: document.body });
+    await app.init({ background: '#ccccccff', resizeTo: document.body });
 
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
 
-    // Create and add a container to the stage
     const container = new Container();
-
     app.stage.addChild(container);
+
+    container.addChild(map)
 
     // Move the container to the center
     container.x = app.screen.width / 2;
