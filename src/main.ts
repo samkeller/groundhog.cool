@@ -1,10 +1,9 @@
-import { Application, Assets, Container } from 'pixi.js';
+import { Application, Assets, Container, Point } from 'pixi.js';
 import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions"
 import Groundhog from './assets/Groundhog';
 import getSimpleMap from './assets/maps/SimpleMap';
 
 (async () => {
-    const map = await getSimpleMap()
 
     if ((window as any).__pixi_playground_initialized) {
         // Déjà initialisé, on ne fait rien
@@ -23,11 +22,14 @@ import getSimpleMap from './assets/maps/SimpleMap';
     const container = new Container();
     app.stage.addChild(container);
 
+    // Map
+    const map = await getSimpleMap()
+    map.position = { x: container.width / 2, y: container.height / 2 }
     container.addChild(map)
 
     // Move the container to the center
-    container.x = app.screen.width / 2;
-    container.y = app.screen.height / 2;
+    container.x = (app.screen.width - map.width) / 2;
+    container.y = (app.screen.height - map.height) / 2;
 
     const groundHogTexture = await Assets.load("assets/images/groundhog.png");
 

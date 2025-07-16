@@ -11,6 +11,9 @@ const onScrollFn = (e: WheelEvent, container: Container) => {
     e.preventDefault();
     if (!container) return;
 
+    const mousePos = { x: e.clientX, y: e.clientY };
+    const beforeZoom = container.toLocal(mousePos);
+
     // Utilise deltaY pour déterminer le zoom
     let scale = container.scale.x;
     if (e.deltaY < 0) {
@@ -22,6 +25,13 @@ const onScrollFn = (e: WheelEvent, container: Container) => {
     }
     scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
     container.scale.set(scale);
+
+    const afterZoom = container.toLocal(mousePos);
+
+    container.x += (afterZoom.x - beforeZoom.x) * container.scale.x;
+    container.y += (afterZoom.y - beforeZoom.y) * container.scale.y
+
+
 }
 
 //////////////////////////////////////////
