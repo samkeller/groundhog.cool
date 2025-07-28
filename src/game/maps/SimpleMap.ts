@@ -1,5 +1,5 @@
 import { Assets, Spritesheet } from "pixi.js";
-import spritesJSON from "../images/sprites.json"
+import spritesJSON from "../../assets/images/sprites.json"
 import { CompositeTilemap } from "@pixi/tilemap";
 import perlin from "perlin-noise"
 

@@ -1,7 +1,7 @@
 import { Application, Assets, Container, Point } from 'pixi.js';
 import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions"
-import Groundhog from './assets/Groundhog';
-import getSimpleMap from './assets/maps/SimpleMap';
+import Groundhog from './game/Groundhog';
+import getSimpleMap from './game/maps/SimpleMap';
 
 (async () => {
 
