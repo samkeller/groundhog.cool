@@ -41,7 +41,7 @@ async function addObjects(gridHeight: number, gridWidth: number, dataMap: TMap):
 
     let burrowPlaced = false
 
-    const [minCenterX, maxCenterX, minCenterY, maxCenterY] = [
+    const [minCenterY, maxCenterY, minCenterX, maxCenterX] = [
         Math.floor(gridHeight / 2 - 5),
         Math.floor(gridHeight / 2 + 5),
         Math.floor(gridWidth / 2 - 5),
@@ -55,10 +55,10 @@ async function addObjects(gridHeight: number, gridWidth: number, dataMap: TMap):
             const tile = dataMapCp[y][x];
             // Que les tiles d'herbe
             if (tile.height > WATER_HEIGHT && tile.height < MOUNTAIN_HEIGHT) {
-                if (x > minCenterX &&
-                    x < maxCenterX &&
-                    y > minCenterY &&
+                if (y > minCenterY &&
                     y < maxCenterY &&
+                    x > minCenterX &&
+                    x < maxCenterX &&
                     Math.random() < 0.10 &&
                     !burrowPlaced) {
                     tile.element = new Burrow(burrowTexture, {

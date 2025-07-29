@@ -46,13 +46,11 @@ import DrawOverlay from './overlay/DrawOverlay';
         throw new Error("Pas de terrier :(");
     }
 
-    console.log(burrow)
     // Move the container to the burrow
     const centerX = app.renderer.width / 2;
     const centerY = app.renderer.height / 2;
     gameContainer.x = centerX - burrow.position.x;
     gameContainer.y = centerY - burrow.position.y;
-
 
     const tickers: Drawable[] = [
         ...objects
