@@ -3,6 +3,9 @@ import TGameState from "../../types/TGameState";
 import { MoveIntent, SpawnIntent, TTickIntent } from "../../types/TTickIntent";
 import Groundhog from "../entities/Groundhog";
 import Tickable from "../entities/Tickable";
+import Drawable from "../entities/Drawable";
+import { TMap } from "../../types/TMap";
+import MoveUtils from "../../utils/MoveUtils";
 
 export default class IntentProcessor {
     public async apply(state: TGameState, intent: TTickIntent, source: Tickable) {
@@ -48,10 +51,28 @@ export default class IntentProcessor {
         state.tickers.push(newEntity);
         // autres effets éventuels : log, événement, limitation de population, etc.
     }
+
+
     private async handleMove(state: TGameState, intent: MoveIntent, source: Tickable) {
-        intent.object.rotation = intent.direction;
-        intent.object.speed = intent.speed;
-        intent.object.draw(state.container)
+        const map = state.map;
+        const tileSize = 16; // from MapDraw.ts
+        const { direction, speed } = intent;
+        const result = new MoveUtils().findValidDirection(map, tileSize, intent.object, speed, direction);
+
+        if (!result) {
+            intent.object.speed = 0;
+            return;
+        } else {
+            // Mouvement autorisé dans la direction trouvée
+            intent.object.rotation = result.direction;
+            intent.object.speed = result.speed;
+            intent.object.position = {
+                x: result.nextX,
+                y: result.nextY
+            }
+        }
+
+        intent.object.draw(state.container);
     }
 
 }
