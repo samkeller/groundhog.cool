@@ -7,6 +7,7 @@ import Tickable from "./Tickable";
 
 export default class Tree extends Drawable implements Tickable {
     food = 0;
+    foodText: Text
 
     constructor(
         public texture: Texture,
@@ -16,28 +17,33 @@ export default class Tree extends Drawable implements Tickable {
             new Sprite(texture),
             { width: 1024 / 50, height: 1536 / 50 }
         );
+
+        this.foodText = new Text({
+            text: this.food.toString(),
+            style: {
+                fontFamily: "Arial",
+                fontSize: 10,
+                fill: "FFFFFF",
+                align: "center",
+            },
+            position: this.position
+        });
     }
 
     public doTick(context: TTickContext): TTickIntent {
-        this.food + 1
+        this.food += 0.05
         return {
             type: "none"
         }
     }
+
     public draw(container: Container) {
         super.draw(container)
 
-        const text = new Text({
-            label: this.food.toString(),
-            style: {
-                fontFamily: "Arial",
-                fontSize: 14,
-                fill: 0x000000,
-                align: "center",
-            }
-        });
-
-        container.addChild(text)
+        this.foodText.text = Math.floor(this.food);
+        if (!container.children.includes(this.foodText)) {
+            container.addChild(this.foodText);
+        }
     }
 
 }

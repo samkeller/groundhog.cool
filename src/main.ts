@@ -8,6 +8,7 @@ import Tickable from './game/entities/Tickable';
 import IntentProcessor from './game/engine/IntentProcessor';
 import TGameState from './types/TGameState';
 import MapObjects from './game/maps/MapObjects';
+import Drawable from './game/entities/Drawable';
 
 (async () => {
 
@@ -30,10 +31,8 @@ import MapObjects from './game/maps/MapObjects';
     const dataMap = await getDataMap()
     const drawnMap = await MapDraw(dataMap)
     const objects = await MapObjects(dataMap)
-    
-    const objectContainer = new Container()
-    objects.forEach(o => o.draw(objectContainer))
 
+    const objectContainer = new Container()
     container.addChild(drawnMap)
     container.addChild(objectContainer)
 
@@ -43,14 +42,7 @@ import MapObjects from './game/maps/MapObjects';
 
     const player = new Player(200)
 
-    // const burrowTexture = await Assets.load("assets/images/burrow.png");
-    // const startingBurrow = new Burrow(
-    //     burrowTexture,
-    //     { x: container.width / 2, y: container.height / 2 }
-    // )
-    // startingBurrow.draw(container)
-
-    const tickers: Tickable[] = [
+    const tickers: Drawable[] = [
         ...objects
     ]
 
@@ -71,6 +63,11 @@ import MapObjects from './game/maps/MapObjects';
                 tickers
             }
             await processor.apply(state, intent, ticker);
+        }
+
+        // Redraw (affichage)
+        for (const obj of tickers) {
+            obj.draw(objectContainer);
         }
     });
 

@@ -1,6 +1,5 @@
 import { TMap } from "../../types/TMap";
 import Drawable from "../entities/Drawable";
-import { TILE_SIZE } from "./TerrainVariables";
 
 export default (async (map: TMap) => {
     const drawables: Drawable[] = []
