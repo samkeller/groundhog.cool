@@ -23,7 +23,7 @@ import DrawOverlay from './overlay/DrawOverlay';
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
 
-    const player = new Player(200)
+    const player = new Player(100)
 
     const gameContainer = new Container();
 
@@ -38,7 +38,6 @@ import DrawOverlay from './overlay/DrawOverlay';
     gameContainer.addChild(drawnMap)
     gameContainer.addChild(objectContainer)
 
-    console.log(objects.map(v => v.name))
     const burrow = objects.find(elem => {
         return elem.name === "burrow"
     })

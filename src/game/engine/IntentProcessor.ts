@@ -3,9 +3,8 @@ import TGameState from "../../types/TGameState";
 import { MoveIntent, SpawnIntent, TTickIntent } from "../../types/TTickIntent";
 import Groundhog from "../entities/Groundhog";
 import Tickable from "../entities/Tickable";
-import Drawable from "../entities/Drawable";
-import { TMap } from "../../types/TMap";
 import MoveUtils from "../../utils/MoveUtils";
+import { getSpawnCost } from "../../utils/MathUtils";
 
 export default class IntentProcessor {
     public async apply(state: TGameState, intent: TTickIntent, source: Tickable) {
@@ -21,19 +20,19 @@ export default class IntentProcessor {
     }
 
     private async handleSpawn(state: TGameState, intent: SpawnIntent) {
-        const spawnCosts = {
-            groundhog: 20
+        const baseSpawnCosts = {
+            groundhog: 10
         };
+        // 10 - 20 - 30 - 50 - 80 -
 
         const prefab = intent.prefab;
-        const cost = spawnCosts[prefab];
         const player = state.player;
-
+        const cost = getSpawnCost(baseSpawnCosts[prefab], player.populationCount);
         if (player.food < cost) {
-            console.warn(`Not enough food to spawn ${prefab}`);
             return;
         }
         player.food -= cost;
+        player.populationCount++;
 
         const prefabRegistry = {
             groundhog: async () => {

@@ -18,7 +18,7 @@ export default class Burrow extends Drawable implements Tickable {
     }
 
     public doTick(context: TTickContext): TTickIntent {
-        if (context.owner.food > 100) {
+        if (context.owner.food > 0) {
             return {
                 type: "spawn",
                 prefab: "groundhog",
