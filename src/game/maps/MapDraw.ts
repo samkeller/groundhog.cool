@@ -25,7 +25,6 @@ export default (async (map: TMap) => {
             spritesheet.textures['mountain.png']
         ]
 
-
     for (let y = 0; y < map.length; y++) {
         for (let x = 0; x < map[y].length; x++) {
             const cellData = map[y][x];

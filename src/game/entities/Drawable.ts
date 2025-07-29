@@ -1,6 +1,6 @@
 import { Container, Sprite } from "pixi.js";
-import TPosition from "../types/TPosition";
-import TSize from "../types/TSize";
+import TPosition from "../../types/TPosition";
+import TSize from "../../types/TSize";
 
 
 export default abstract class Drawable {
@@ -31,7 +31,7 @@ export default abstract class Drawable {
     }
 
     draw(container: Container) {
-        const rad = this.rotation * Math.PI / 180;
+        const rad = (this.rotation - 180) * Math.PI / 180;
         this.position = {
             x: this.position.x + Math.cos(rad) * this.speed,
             y: this.position.y + Math.sin(rad) * this.speed
@@ -42,7 +42,8 @@ export default abstract class Drawable {
         this.sprite.y = this.position.y;
         this.sprite.width = this.size.width;
         this.sprite.height = this.size.height;
-        this.sprite.rotation = (this.rotation - 270) * Math.PI / 180;
+        // Par défaut, les sprites regardent vers le haut
+        this.sprite.rotation = (this.rotation - 90) * Math.PI / 180;
         container.addChild(this.sprite);
     }
 }

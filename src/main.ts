@@ -1,15 +1,17 @@
-import { Application, Assets, Container, Point } from 'pixi.js';
+import { Application, Assets, Container } from 'pixi.js';
 import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions"
-import Groundhog from './game/Groundhog';
 import getDataMap from './game/maps/SimpleMap';
 import MapDraw from './game/maps/MapDraw';
+import Burrow from './game/entities/Burrow';
+import Player from './game/Player';
+import Tickable from './game/entities/Tickable';
+import IntentProcessor from './game/engine/IntentProcessor';
+import TGameState from './types/TGameState';
 
 (async () => {
 
-    if ((window as any).__pixi_playground_initialized) {
-        // Déjà initialisé, on ne fait rien
-        return;
-    }
+    // Déjà initialisé, on ne fait rien
+    if ((window as any).__pixi_playground_initialized) return;
     (window as any).__pixi_playground_initialized = true;
 
     const app = new Application();
@@ -33,17 +35,37 @@ import MapDraw from './game/maps/MapDraw';
     container.x = (app.screen.width - drawnMap.width) / 2;
     container.y = (app.screen.height - drawnMap.height) / 2;
 
-    const groundHogTexture = await Assets.load("assets/images/groundhog.png");
+    const player = new Player(200)
 
-    const groundHog = new Groundhog(groundHogTexture)
-    groundHog.position = { x: container.width / 2, y: container.height / 2 }
-    groundHog.draw(container)
+    const burrowTexture = await Assets.load("assets/images/burrow.png");
+    const startingBurrow = new Burrow(
+        burrowTexture,
+        { x: container.width / 2, y: container.height / 2 }
+    )
+    startingBurrow.draw(container)
 
+    const tickers: Tickable[] = [
+        startingBurrow
+    ]
+
+    const processor = new IntentProcessor();
     // Listen for animate update
-    app.ticker.add((time) => {
-        // Continuously rotate the container!
-        // * use delta to create frame-independent transform *
-        groundHog.draw(container)
+    app.ticker.add(async (time) => {
+        for (const ticker of tickers) {
+            const intent = ticker.doTick({
+                map: dataMap,
+                owner: player,
+                tickers
+            });
+
+            const state: TGameState = {
+                container,
+                map: dataMap,
+                player,
+                tickers
+            }
+            await processor.apply(state, intent, ticker);
+        }
     });
 
     // Passe le container à la fonction de zoom avec la molette
