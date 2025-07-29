@@ -1,4 +1,4 @@
-import { Application, Assets, Container } from 'pixi.js';
+import { Application, Assets, Container, Text } from 'pixi.js';
 import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions"
 import getDataMap from './game/maps/SimpleMap';
 import MapDraw from './game/maps/MapDraw';
@@ -9,6 +9,7 @@ import IntentProcessor from './game/engine/IntentProcessor';
 import TGameState from './types/TGameState';
 import MapObjects from './game/maps/MapObjects';
 import Drawable from './game/entities/Drawable';
+import DrawOverlay from './overlay/DrawOverlay';
 
 (async () => {
 
@@ -24,8 +25,11 @@ import Drawable from './game/entities/Drawable';
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
 
-    const container = new Container();
-    app.stage.addChild(container);
+    const player = new Player(200)
+
+    const gameContainer = new Container();
+   
+    app.stage.addChild(gameContainer);
 
     // Map
     const dataMap = await getDataMap()
@@ -33,14 +37,13 @@ import Drawable from './game/entities/Drawable';
     const objects = await MapObjects(dataMap)
 
     const objectContainer = new Container()
-    container.addChild(drawnMap)
-    container.addChild(objectContainer)
+    gameContainer.addChild(drawnMap)
+    gameContainer.addChild(objectContainer)
 
     // Move the container to the center
-    container.x = (app.screen.width - drawnMap.width) / 2;
-    container.y = (app.screen.height - drawnMap.height) / 2;
+    gameContainer.x = (app.screen.width - drawnMap.width) / 2;
+    gameContainer.y = (app.screen.height - drawnMap.height) / 2;
 
-    const player = new Player(200)
 
     const tickers: Drawable[] = [
         ...objects
@@ -57,7 +60,7 @@ import Drawable from './game/entities/Drawable';
             });
 
             const state: TGameState = {
-                container,
+                container: gameContainer,
                 map: dataMap,
                 player,
                 tickers
@@ -69,11 +72,12 @@ import Drawable from './game/entities/Drawable';
         for (const obj of tickers) {
             obj.draw(objectContainer);
         }
+        DrawOverlay(app, player)
     });
 
     // Passe le container à la fonction de zoom avec la molette
-    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, container))
+    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, gameContainer))
     app.canvas.addEventListener("mousedown", (evt) => onMouseDownFn(evt))
-    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, container))
-    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, container))
+    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, gameContainer))
+    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, gameContainer))
 })();
