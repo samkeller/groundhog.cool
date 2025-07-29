@@ -55,9 +55,8 @@ export default class IntentProcessor {
 
     private async handleMove(state: TGameState, intent: MoveIntent, source: Tickable) {
         const map = state.map;
-        const tileSize = 16; // from MapDraw.ts
         const { direction, speed } = intent;
-        const result = new MoveUtils().findValidDirection(map, tileSize, intent.object, speed, direction);
+        const result = new MoveUtils().findValidDirection(map, intent.object, speed, direction);
 
         if (!result) {
             intent.object.speed = 0;

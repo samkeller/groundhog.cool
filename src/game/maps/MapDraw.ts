@@ -2,10 +2,9 @@ import { Assets, Spritesheet } from "pixi.js";
 import spritesJSON from "../../assets/images/sprites.json"
 import { TMap } from "../../types/TMap";
 import { CompositeTilemap } from "@pixi/tilemap";
+import { MOUNTAIN_HEIGHT, TILE_SIZE, WATER_HEIGHT } from "./TerrainVariables";
 
 export default (async (map: TMap) => {
-    const tileSize = 16
-
     const tilemap = new CompositeTilemap();
 
     const sheetImage = await Assets.load("assets/images/sprites.png");
@@ -28,13 +27,13 @@ export default (async (map: TMap) => {
     for (let y = 0; y < map.length; y++) {
         for (let x = 0; x < map[y].length; x++) {
             const cellData = map[y][x];
-            if (cellData.height <= 0.4) {
-                tilemap.tile(water, x * tileSize, y * tileSize);
-            } else if (cellData.height > 0.4 && cellData.height < 0.8) {
-                tilemap.tile(grass, x * tileSize, y * tileSize);
+            if (cellData.height <= WATER_HEIGHT) {
+                tilemap.tile(water, x * TILE_SIZE, y * TILE_SIZE);
+            } else if (cellData.height > WATER_HEIGHT && cellData.height < MOUNTAIN_HEIGHT) {
+                tilemap.tile(grass, x * TILE_SIZE, y * TILE_SIZE);
             }
             else {
-                tilemap.tile(moutain, x * tileSize, y * tileSize);
+                tilemap.tile(moutain, x * TILE_SIZE, y * TILE_SIZE);
             }
         }
     }

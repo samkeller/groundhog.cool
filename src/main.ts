@@ -7,6 +7,7 @@ import Player from './game/Player';
 import Tickable from './game/entities/Tickable';
 import IntentProcessor from './game/engine/IntentProcessor';
 import TGameState from './types/TGameState';
+import MapObjects from './game/maps/MapObjects';
 
 (async () => {
 
@@ -28,8 +29,13 @@ import TGameState from './types/TGameState';
     // Map
     const dataMap = await getDataMap()
     const drawnMap = await MapDraw(dataMap)
-    drawnMap.position = { x: container.width / 2, y: container.height / 2 }
+    const objects = await MapObjects(dataMap)
+    
+    const objectContainer = new Container()
+    objects.forEach(o => o.draw(objectContainer))
+
     container.addChild(drawnMap)
+    container.addChild(objectContainer)
 
     // Move the container to the center
     container.x = (app.screen.width - drawnMap.width) / 2;
@@ -37,15 +43,15 @@ import TGameState from './types/TGameState';
 
     const player = new Player(200)
 
-    const burrowTexture = await Assets.load("assets/images/burrow.png");
-    const startingBurrow = new Burrow(
-        burrowTexture,
-        { x: container.width / 2, y: container.height / 2 }
-    )
-    startingBurrow.draw(container)
+    // const burrowTexture = await Assets.load("assets/images/burrow.png");
+    // const startingBurrow = new Burrow(
+    //     burrowTexture,
+    //     { x: container.width / 2, y: container.height / 2 }
+    // )
+    // startingBurrow.draw(container)
 
     const tickers: Tickable[] = [
-        startingBurrow
+        ...objects
     ]
 
     const processor = new IntentProcessor();

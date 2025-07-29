@@ -1,9 +1,10 @@
 import { Container, Sprite } from "pixi.js";
 import TPosition from "../../types/TPosition";
 import TSize from "../../types/TSize";
+import Tickable from "./Tickable";
 
 
-export default abstract class Drawable {
+export default abstract class Drawable extends Tickable {
     /**
      * 0 - 360
      */
@@ -14,6 +15,7 @@ export default abstract class Drawable {
     size: TSize = { width: 0, height: 0 }
 
     constructor(public sprite: Sprite, size?: TSize) {
+        super()
         if (size) {
             this.size = size
         }
