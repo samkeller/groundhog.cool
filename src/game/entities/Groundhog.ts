@@ -6,6 +6,7 @@ import { TTickIntent } from "../../types/TTickIntent";
 import Tickable from "./Tickable";
 
 export default class Groundhog extends Drawable implements Tickable {
+    name = "groundhog"
     constructor(public texture: Texture) {
         super(
             new Sprite(texture),

@@ -6,6 +6,7 @@ import { TTickIntent } from "../../types/TTickIntent";
 import Tickable from "./Tickable";
 
 export default class Burrow extends Drawable implements Tickable {
+    name = "burrow"
     constructor(
         public texture: Texture,
         public position: TPosition

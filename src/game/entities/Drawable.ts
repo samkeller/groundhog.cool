@@ -13,7 +13,7 @@ export default abstract class Drawable extends Tickable {
     direction: TPosition = { x: 0, y: 0 }
     speed: number = 0
     size: TSize = { width: 0, height: 0 }
-
+    abstract name: string
     constructor(public sprite: Sprite, size?: TSize) {
         super()
         if (size) {

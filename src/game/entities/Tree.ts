@@ -8,6 +8,7 @@ import Tickable from "./Tickable";
 export default class Tree extends Drawable implements Tickable {
     food = 0;
     foodText: Text
+    name = "tree"
 
     constructor(
         public texture: Texture,

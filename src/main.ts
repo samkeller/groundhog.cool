@@ -1,10 +1,8 @@
-import { Application, Assets, Container, Text } from 'pixi.js';
+import { Application, Container } from 'pixi.js';
 import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions"
 import getDataMap from './game/maps/SimpleMap';
 import MapDraw from './game/maps/MapDraw';
-import Burrow from './game/entities/Burrow';
 import Player from './game/Player';
-import Tickable from './game/entities/Tickable';
 import IntentProcessor from './game/engine/IntentProcessor';
 import TGameState from './types/TGameState';
 import MapObjects from './game/maps/MapObjects';
@@ -28,7 +26,7 @@ import DrawOverlay from './overlay/DrawOverlay';
     const player = new Player(200)
 
     const gameContainer = new Container();
-   
+
     app.stage.addChild(gameContainer);
 
     // Map
@@ -40,9 +38,20 @@ import DrawOverlay from './overlay/DrawOverlay';
     gameContainer.addChild(drawnMap)
     gameContainer.addChild(objectContainer)
 
-    // Move the container to the center
-    gameContainer.x = (app.screen.width - drawnMap.width) / 2;
-    gameContainer.y = (app.screen.height - drawnMap.height) / 2;
+    console.log(objects.map(v => v.name))
+    const burrow = objects.find(elem => {
+        return elem.name === "burrow"
+    })
+    if (!burrow) {
+        throw new Error("Pas de terrier :(");
+    }
+
+    console.log(burrow)
+    // Move the container to the burrow
+    const centerX = app.renderer.width / 2;
+    const centerY = app.renderer.height / 2;
+    gameContainer.x = centerX - burrow.position.x;
+    gameContainer.y = centerY - burrow.position.y;
 
 
     const tickers: Drawable[] = [

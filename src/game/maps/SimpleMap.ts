@@ -28,22 +28,31 @@ export default (async (): Promise<TMap> => {
             dataMap[y][x] = cellData
         }
     }
+
+    const dataMapWithObjects = await addObjects(gridHeight, gridWidth, dataMap);
+
+    return dataMapWithObjects
+})
+
+async function addObjects(gridHeight: number, gridWidth: number, dataMap: TMap): Promise<TMap> {
+    let dataMapCp: TMap = [...dataMap]
     const appleTreeTexture = await Assets.load("assets/images/apple_tree.png");
     const burrowTexture = await Assets.load("assets/images/burrow.png");
 
     let burrowPlaced = false
+
     const [minCenterX, maxCenterX, minCenterY, maxCenterY] = [
         Math.floor(gridHeight / 2 - 5),
         Math.floor(gridHeight / 2 + 5),
         Math.floor(gridWidth / 2 - 5),
         Math.floor(gridWidth / 2 + 5),
-    ]
+    ];
 
     // Draw 2 - Elements
     for (let y = 0; y < gridHeight; y++) {
         for (let x = 0; x < gridWidth; x++) {
 
-            const tile = dataMap[y][x]
+            const tile = dataMapCp[y][x];
             // Que les tiles d'herbe
             if (tile.height > WATER_HEIGHT && tile.height < MOUNTAIN_HEIGHT) {
                 if (x > minCenterX &&
@@ -51,12 +60,11 @@ export default (async (): Promise<TMap> => {
                     y > minCenterY &&
                     y < maxCenterY &&
                     Math.random() < 0.10 &&
-                    !burrowPlaced
-                ) {
+                    !burrowPlaced) {
                     tile.element = new Burrow(burrowTexture, {
                         x: tile.position.x * TILE_SIZE,
                         y: tile.position.y * TILE_SIZE
-                    })
+                    });
                     burrowPlaced = true;
                 }
 
@@ -64,11 +72,17 @@ export default (async (): Promise<TMap> => {
                     tile.element = new Tree(appleTreeTexture, {
                         x: tile.position.x * TILE_SIZE,
                         y: tile.position.y * TILE_SIZE
-                    })
+                    });
                 }
             }
         }
     }
 
-    return dataMap
-})
+    // pas réussi à ajouter le départ: restart
+
+    if (!burrowPlaced) {
+        dataMapCp = await addObjects(gridHeight, gridWidth, dataMap)
+    }
+
+    return dataMapCp;
+}
