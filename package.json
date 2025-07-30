@@ -16,6 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "@pixi/tilemap": "^5.0.2",
+    "@types/pathfinding": "^0.1.0",
+    "pathfinding": "^0.4.18",
     "perlin-noise": "^0.0.1",
     "pixi-viewport": "^6.0.3",
     "pixi.js": "^8.11.0"

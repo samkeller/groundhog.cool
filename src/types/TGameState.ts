@@ -1,7 +1,7 @@
 import { Container } from "pixi.js";
 import Player from "../game/Player";
 import { TMap } from "./TMap";
-import Tickable from "../game/entities/Tickable";
+import Tickable from "../game/entities/types/Tickable";
 
 export default interface TGameState {
   // Tickables (Burrow, Groundhog...) : entités qui doivent être mises à jour

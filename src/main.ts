@@ -6,11 +6,10 @@ import Player from './game/Player';
 import IntentProcessor from './game/engine/IntentProcessor';
 import TGameState from './types/TGameState';
 import MapObjects from './game/maps/MapObjects';
-import Drawable from './game/entities/Drawable';
+import Drawable from './game/entities/types/Drawable';
 import DrawOverlay from './overlay/DrawOverlay';
 
 (async () => {
-
     // Déjà initialisé, on ne fait rien
     if ((window as any).__pixi_playground_initialized) return;
     (window as any).__pixi_playground_initialized = true;
@@ -23,7 +22,7 @@ import DrawOverlay from './overlay/DrawOverlay';
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
 
-    const player = new Player(100)
+    const player = new Player(10)
 
     const gameContainer = new Container();
 
@@ -55,7 +54,8 @@ import DrawOverlay from './overlay/DrawOverlay';
         ...objects
     ]
 
-    const processor = new IntentProcessor();
+    const processor = new IntentProcessor(dataMap);
+
     // Listen for animate update
     app.ticker.add(async (time) => {
         for (const ticker of tickers) {
@@ -66,7 +66,7 @@ import DrawOverlay from './overlay/DrawOverlay';
             });
 
             const state: TGameState = {
-                container: gameContainer,
+                container: objectContainer,
                 map: dataMap,
                 player,
                 tickers

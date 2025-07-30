@@ -1,14 +1,13 @@
 import { Container, Sprite } from "pixi.js";
-import TPosition from "../../types/TPosition";
-import TSize from "../../types/TSize";
 import Tickable from "./Tickable";
-
+import TSize from "../../../types/TSize";
+import TPosition from "../../../types/TPosition";
 
 export default abstract class Drawable extends Tickable {
     /**
-     * 0 - 360
+     * 0 - 360 (degrés)
      */
-    private _rotation: number = 90;
+    private _rotation: number = 0;
     position: TPosition = { x: 0, y: 0 }
     direction: TPosition = { x: 0, y: 0 }
     speed: number = 0
@@ -33,19 +32,11 @@ export default abstract class Drawable extends Tickable {
     }
 
     draw(container: Container) {
-        const rad = (this.rotation - 180) * Math.PI / 180;
-        this.position = {
-            x: this.position.x + Math.cos(rad) * this.speed,
-            y: this.position.y + Math.sin(rad) * this.speed
-        }
-
-
         this.sprite.x = this.position.x;
         this.sprite.y = this.position.y;
         this.sprite.width = this.size.width;
         this.sprite.height = this.size.height;
-        // Par défaut, les sprites regardent vers le haut
-        this.sprite.rotation = (this.rotation - 90) * Math.PI / 180;
+        this.sprite.angle = this.rotation;
         container.addChild(this.sprite);
     }
 }

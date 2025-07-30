@@ -1,4 +1,4 @@
-import Tickable from "../game/entities/Tickable";
+import Tickable from "../game/entities/types/Tickable";
 import Player from "../game/Player";
 import { TMap } from "./TMap";
 

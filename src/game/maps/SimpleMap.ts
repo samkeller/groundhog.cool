@@ -22,6 +22,7 @@ export default (async (): Promise<TMap> => {
             const height = per[y * gridWidth + x]
             const cellData: TTile = {
                 height: height,
+                walkable: height > WATER_HEIGHT && height < MOUNTAIN_HEIGHT,
                 position: { x, y },
                 element: null
             }

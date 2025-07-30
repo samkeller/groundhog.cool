@@ -6,6 +6,7 @@ type TMap = TTile[][]
 
 interface TTile {
     height: number, // 0 - 1
+    walkable: boolean,
     position: TPosition,
     element: Tree | Burrow |null
 }

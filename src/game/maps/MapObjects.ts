@@ -1,5 +1,5 @@
 import { TMap } from "../../types/TMap";
-import Drawable from "../entities/Drawable";
+import Drawable from "../entities/types/Drawable";
 
 export default (async (map: TMap) => {
     const drawables: Drawable[] = []

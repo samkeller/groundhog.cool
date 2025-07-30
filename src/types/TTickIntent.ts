@@ -1,4 +1,4 @@
-import Drawable from "../game/entities/Drawable"
+import Drawable from "../game/entities/types/Drawable"
 import TPosition from "./TPosition"
 
 type TTickIntent =
@@ -7,6 +7,7 @@ type TTickIntent =
     }
     | SpawnIntent
     | MoveIntent
+    | MoveToIntent
 
 interface SpawnIntent {
     type: "spawn",
@@ -16,9 +17,22 @@ interface SpawnIntent {
 
 interface MoveIntent {
     type: "move",
+    /**
+     * Objet à déplacer
+     */
     object: Drawable
     direction: number
     speed: number
 }
 
-export type { TTickIntent, SpawnIntent, MoveIntent }
+interface MoveToIntent {
+    type: "moveTo",
+    /**
+     * Objet à déplacer
+     */
+    object: Drawable
+    toPosition: TPosition
+    speed: number
+}
+
+export type { TTickIntent, SpawnIntent, MoveIntent, MoveToIntent }

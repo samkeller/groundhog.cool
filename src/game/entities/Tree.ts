@@ -1,9 +1,9 @@
 import { Container, Sprite, Texture, Text } from "pixi.js";
-import Drawable from "./Drawable";
+import Drawable from "./types/Drawable";
 import TTickContext from "../../types/TTickContext";
 import TPosition from "../../types/TPosition";
 import { TTickIntent } from "../../types/TTickIntent";
-import Tickable from "./Tickable";
+import Tickable from "./types/Tickable";
 
 export default class Tree extends Drawable implements Tickable {
     food = 0;
