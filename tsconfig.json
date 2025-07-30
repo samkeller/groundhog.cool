@@ -12,6 +12,6 @@
         "noImplicitAny": false
     },
     "include": [
-        "src"
+        "src",
     ]
 }

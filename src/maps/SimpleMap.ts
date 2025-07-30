@@ -1,11 +1,12 @@
 import perlin from "perlin-noise"
-import { TMap, TTile } from "../../types/TMap";
-import Tree from "../entities/Tree";
+import { TMap, TTile } from "../types/TMap";
 import { Assets } from "pixi.js";
 import { MOUNTAIN_HEIGHT, TILE_SIZE, WATER_HEIGHT } from "./TerrainVariables";
-import Burrow from "../entities/Burrow";
+import { ECS } from "../ECS";
+import { createBurrow } from "../factories/BurrowFactory";
+import { createTree } from "../factories/TreeFactory";
 
-export default (async (): Promise<TMap> => {
+export default (async (ecs: ECS): Promise<TMap> => {
     const dataMap: TMap = []
     const WIDTH = 1920
     const HEIGHT = 1088
@@ -24,18 +25,18 @@ export default (async (): Promise<TMap> => {
                 height: height,
                 walkable: height > WATER_HEIGHT && height < MOUNTAIN_HEIGHT,
                 position: { x, y },
-                element: null
+                component: null
             }
             dataMap[y][x] = cellData
         }
     }
 
-    const dataMapWithObjects = await addObjects(gridHeight, gridWidth, dataMap);
+    const dataMapWithObjects = await addObjects(ecs, gridHeight, gridWidth, dataMap);
 
     return dataMapWithObjects
 })
 
-async function addObjects(gridHeight: number, gridWidth: number, dataMap: TMap): Promise<TMap> {
+async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataMap: TMap): Promise<TMap> {
     let dataMapCp: TMap = [...dataMap]
     const appleTreeTexture = await Assets.load("assets/images/apple_tree.png");
     const burrowTexture = await Assets.load("assets/images/burrow.png");
@@ -62,18 +63,12 @@ async function addObjects(gridHeight: number, gridWidth: number, dataMap: TMap):
                     x < maxCenterX &&
                     Math.random() < 0.10 &&
                     !burrowPlaced) {
-                    tile.element = new Burrow(burrowTexture, {
-                        x: tile.position.x * TILE_SIZE,
-                        y: tile.position.y * TILE_SIZE
-                    });
+                    tile.component = createBurrow(ecs, x * TILE_SIZE, y * TILE_SIZE, burrowTexture)
                     burrowPlaced = true;
                 }
 
                 if (Math.random() < 0.05) {
-                    tile.element = new Tree(appleTreeTexture, {
-                        x: tile.position.x * TILE_SIZE,
-                        y: tile.position.y * TILE_SIZE
-                    });
+                    tile.component = createTree(ecs, tile.position.x * TILE_SIZE, tile.position.y * TILE_SIZE, appleTreeTexture)
                 }
             }
         }
@@ -82,7 +77,7 @@ async function addObjects(gridHeight: number, gridWidth: number, dataMap: TMap):
     // pas réussi à ajouter le départ: restart
 
     if (!burrowPlaced) {
-        dataMapCp = await addObjects(gridHeight, gridWidth, dataMap)
+        dataMapCp = await addObjects(ecs, gridHeight, gridWidth, dataMap)
     }
 
     return dataMapCp;

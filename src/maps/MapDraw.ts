@@ -1,6 +1,6 @@
 import { Assets, Spritesheet } from "pixi.js";
-import spritesJSON from "../../assets/images/sprites.json"
-import { TMap } from "../../types/TMap";
+import spritesJSON from "../assets/images/sprites.json"
+import { TMap } from "../types/TMap";
 import { CompositeTilemap } from "@pixi/tilemap";
 import { MOUNTAIN_HEIGHT, TILE_SIZE, WATER_HEIGHT } from "./TerrainVariables";
 

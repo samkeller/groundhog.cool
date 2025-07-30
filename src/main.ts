@@ -1,13 +1,22 @@
-import { Application, Container } from 'pixi.js';
+import { Application, Assets, Container } from 'pixi.js';
 import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions"
-import getDataMap from './game/maps/SimpleMap';
-import MapDraw from './game/maps/MapDraw';
-import Player from './game/Player';
-import IntentProcessor from './game/engine/IntentProcessor';
-import TGameState from './types/TGameState';
-import MapObjects from './game/maps/MapObjects';
-import Drawable from './game/entities/types/Drawable';
-import DrawOverlay from './overlay/DrawOverlay';
+import getDataMap from './maps/SimpleMap';
+import MapDraw from './maps/MapDraw';
+import { ECS } from "./ECS";
+import DrawSystem from "./systems/DrawSystem";
+import TickSystem from "./systems/TickSystem";
+import TreeSystem from "./systems/TreeSystem";
+import GroundhogSystem from "./systems/GroundhogSystem";
+import { MoveSystem } from './systems/MoveSystem';
+import { MoveToSystem } from './systems/MoveToSystem';
+import BurrowTagComponent from './components/tags/BurrowTagComponent';
+import PositionComponent from './components/PositionComponent';
+import { createPlayer } from './factories/PlayerFactory';
+import OwnedByComponent from './components/relations/OwnedByComponent';
+import TickContext from './systems/TickContext';
+import { SpawnSystem } from './systems/SpawnSystem';
+import BurrowSystem from './systems/BurrowSystem';
+import GroundhogTagComponent from './components/tags/GroundhogTagComponent';
 
 (async () => {
     // Déjà initialisé, on ne fait rien
@@ -22,68 +31,67 @@ import DrawOverlay from './overlay/DrawOverlay';
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
 
-    const player = new Player(10)
-
     const gameContainer = new Container();
 
     app.stage.addChild(gameContainer);
 
+    // ECS
+    const ecs = new ECS();
+
     // Map
-    const dataMap = await getDataMap()
+    const dataMap = await getDataMap(ecs)
     const drawnMap = await MapDraw(dataMap)
-    const objects = await MapObjects(dataMap)
 
     const objectContainer = new Container()
     gameContainer.addChild(drawnMap)
     gameContainer.addChild(objectContainer)
 
-    const burrow = objects.find(elem => {
-        return elem.name === "burrow"
-    })
-    if (!burrow) {
+    // Ajout du joueur comme entité ECS
+    const playerEntity = createPlayer(ecs);
+
+    // Centrage sur le terrier (à adapter si burrow devient une entité ECS)
+    const burrows = ecs.getEntitiesWith(BurrowTagComponent, PositionComponent);
+    const burrow = burrows[0]; // Il n’y en a qu’un normalement
+    const burrowPos = ecs.getComponent(burrow, PositionComponent)!;
+    // ects.find(elem => elem.name === "burrow");
+    if (!burrow || !burrowPos) {
         throw new Error("Pas de terrier :(");
     }
+
+    ecs.addComponent(burrow, new OwnedByComponent(playerEntity))
 
     // Move the container to the burrow
     const centerX = app.renderer.width / 2;
     const centerY = app.renderer.height / 2;
-    gameContainer.x = centerX - burrow.position.x;
-    gameContainer.y = centerY - burrow.position.y;
+    gameContainer.x = centerX - burrowPos.x;
+    gameContainer.y = centerY - burrowPos.y;
 
-    const tickers: Drawable[] = [
-        ...objects
-    ]
-
-    const processor = new IntentProcessor(dataMap);
-
-    // Listen for animate update
-    app.ticker.add(async (time) => {
-        for (const ticker of tickers) {
-            const intent = ticker.doTick({
-                map: dataMap,
-                owner: player,
-                tickers
-            });
-
-            const state: TGameState = {
-                container: objectContainer,
-                map: dataMap,
-                player,
-                tickers
+    const groundHogAsset = await Assets.load("assets/images/groundhog.png")
+    // Boucle principale ECS
+    app.ticker.add(() => {
+        const context: TickContext = {
+            map: dataMap,
+            assets: {
+                groundhog: groundHogAsset
             }
-            await processor.apply(state, intent, ticker);
         }
 
-        // Redraw (affichage)
-        for (const obj of tickers) {
-            obj.draw(objectContainer);
-        }
-        DrawOverlay(app, player)
+        TickSystem(ecs, context);
+        TreeSystem(ecs);
+        GroundhogSystem(ecs);
+        BurrowSystem(ecs);
+        MoveToSystem(ecs, dataMap)
+        MoveSystem(ecs, dataMap)
+        SpawnSystem(ecs, context)
+        DrawSystem(ecs, objectContainer);
+
+        // TODO: Adapter DrawOverlxay pour ECS (ex: passer l'entité player)
+        // DrawOverlay(app, playerEntity)
     });
 
     // Passe le container à la fonction de zoom avec la molette
-    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, gameContainer))
-    app.canvas.addEventListener("mousedown", (evt) => onMouseDownFn(evt))
-    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, gameContainer))
-    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, gameContainer))
+    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, gameContainer));
+    app.canvas.addEventListener("mousedown", (evt) => onMouseDownFn(evt));
+    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, gameContainer));
+    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, gameContainer));
 })();

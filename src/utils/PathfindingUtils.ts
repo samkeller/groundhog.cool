@@ -1,6 +1,6 @@
 import PF from "pathfinding";
-import { TMap } from "../../types/TMap";
-import TPosition from "../../types/TPosition";
+import { TMap } from "../types/TMap";
+import TPosition from "../types/TPosition";
 
 export default class PathfindingUtils {
 

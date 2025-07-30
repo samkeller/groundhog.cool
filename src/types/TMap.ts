@@ -1,5 +1,4 @@
-import Burrow from "../game/entities/Burrow"
-import Tree from "../game/entities/Tree"
+import { Component } from "../ECS"
 import TPosition from "./TPosition"
 
 type TMap = TTile[][]
@@ -8,7 +7,7 @@ interface TTile {
     height: number, // 0 - 1
     walkable: boolean,
     position: TPosition,
-    element: Tree | Burrow |null
+    component: Component | null
 }
 
 export type { TMap, TTile }

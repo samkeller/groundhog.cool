@@ -1,0 +1,42 @@
+import { ECS, Entity } from "../ECS";
+import BurrowTagComponent from "../components/tags/BurrowTagComponent";
+import FoodComponent from "../components/FoodComponent";
+import PositionComponent from "../components/PositionComponent";
+import OwnedByComponent from "../components/relations/OwnedByComponent";
+import GroundhogTagComponent from "../components/tags/GroundhogTagComponent";
+import { getSpawnCost } from "../utils/MathUtils";
+import SpawnIntentComponent from "../components/intents/SpawnIntentComponent";
+
+export default function BurrowSystem(ecs: ECS) {
+    const burrows: Entity[] = ecs.getEntitiesWith(BurrowTagComponent, FoodComponent, PositionComponent, OwnedByComponent);
+
+    for (const entity of burrows) {
+        const food = ecs.getComponent(entity, FoodComponent);
+        const position = ecs.getComponent(entity, PositionComponent);
+        const owner = ecs.getComponent(entity, OwnedByComponent);
+
+        if (!food || !position || !owner) return;
+        
+            // 1. Compter les marmottes du joueur
+            const marmottes = ecs.getEntitiesWith(GroundhogTagComponent, OwnedByComponent).filter(e =>
+                ecs.getComponent(e, OwnedByComponent)!.ownerId === owner.ownerId
+            );
+            const count = marmottes.length;
+        
+            // 2. Calcul du coût
+            const cost = getSpawnCost(10, count);
+        
+            if (food.amount < cost) return;
+        
+            // 3. Déduction de la nourriture
+            food.amount -= cost;
+        
+            ecs.addComponent(entity, new SpawnIntentComponent(
+                "groundhog",
+                position,
+                entity,
+                owner.ownerId
+            ))
+        
+    }
+}
