@@ -6,8 +6,9 @@ import { ECS } from "../ECS";
 import { createBurrow } from "../factories/BurrowFactory";
 import { createTree } from "../factories/TreeFactory";
 
-export default (async (ecs: ECS): Promise<TMap> => {
+export default (async (): Promise<[ECS, TMap]> => {
     const dataMap: TMap = []
+    const ecs = new ECS()
     const WIDTH = 1920
     const HEIGHT = 1088
 
@@ -31,14 +32,13 @@ export default (async (ecs: ECS): Promise<TMap> => {
         }
     }
 
-    const dataMapWithObjects = await addObjects(ecs, gridHeight, gridWidth, dataMap);
+    const dataMapWithObjects = await addObjects(new ECS(), gridHeight, gridWidth, [...dataMap]);
 
     console.log(`[SimpleMap.ts] DataMap created, size=[width:${gridWidth}, height:${gridHeight}]`)
-    return dataMapWithObjects
+    return [ecs, dataMapWithObjects]
 })
 
 async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataMap: TMap): Promise<TMap> {
-    let dataMapCp: TMap = [...dataMap]
     const appleTreeTexture = await Assets.load("assets/images/apple_tree.png");
     const burrowTexture = await Assets.load("assets/images/burrow.png");
 
@@ -57,7 +57,7 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
     for (let y = 0; y < gridHeight; y++) {
         for (let x = 0; x < gridWidth; x++) {
 
-            const tile = dataMapCp[y][x];
+            const tile = dataMap[y][x];
             // Que les tiles d'herbe
             if (tile.height > WATER_HEIGHT && tile.height < MOUNTAIN_HEIGHT) {
                 if (y > minCenterY &&
@@ -101,8 +101,8 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
     // pas réussi à ajouter le départ: restart
 
     if (!burrowPlaced) {
-        dataMapCp = await addObjects(ecs, gridHeight, gridWidth, dataMap)
+        dataMap = await addObjects(ecs, gridHeight, gridWidth, dataMap)
     }
 
-    return dataMapCp;
+    return dataMap;
 }

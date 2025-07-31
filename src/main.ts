@@ -16,6 +16,7 @@ import { SpawnSystem } from './systems/SpawnSystem';
 import BurrowSystem from './systems/BurrowSystem';
 import VisionSystem from './systems/VisionSystem';
 import TickContext from './assets/context/TickContext';
+import getTestMap from './maps/TestMap1';
 
 (async () => {
     // Déjà initialisé, on ne fait rien
@@ -34,11 +35,9 @@ import TickContext from './assets/context/TickContext';
 
     app.stage.addChild(gameContainer);
 
-    // ECS
-    const ecs = new ECS();
-
     // Map
-    const dataMap = await getDataMap(ecs) // DataMap = tiles !
+    // const [ecs, dataMap] = await getDataMap() // DataMap = tiles !
+    const [ecs, dataMap] = await getTestMap() // DataMap = tiles !
     const drawnMap = await MapDraw(dataMap)
 
     const objectContainer = new Container()
