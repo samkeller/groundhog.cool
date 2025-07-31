@@ -25,7 +25,7 @@ export default function GroundhogSystem(ecs: ECS) {
             if (moveToIntentComponent)
                 ecs.removeComponent(e, MoveToIntentComponent)
             ecs.addComponent(e, new MoveToIntentComponent(burrowHomeComponent.position))
-            return;
+            continue;
         } 
         
         if (!moveToIntentComponent) { // Cherche un arbre
@@ -39,7 +39,7 @@ export default function GroundhogSystem(ecs: ECS) {
                     foodComponent.amount > foodComponent.amountMax / 10
                 ) {
                     ecs.addComponent(e, new MoveToIntentComponent({ ...treePositionComponent }));
-                    return; // une cible suffit
+                    continue; // une cible suffit
                 }
             }
         }
@@ -48,7 +48,7 @@ export default function GroundhogSystem(ecs: ECS) {
             // TODO - MoveUtils.findValidDirection()
             const newDirection = (canMoveComponent.direction + Math.random() * 20 - 10) % 360;
             ecs.addComponent(e, new MoveIntentComponent(speed, newDirection))
-            return;
+            continue;
 
         }
 
