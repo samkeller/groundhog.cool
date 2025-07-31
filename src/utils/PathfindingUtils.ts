@@ -1,4 +1,4 @@
-import PF from "pathfinding";
+import PF, { Grid } from "pathfinding";
 import { TMap } from "../types/TMap";
 import TPosition from "../types/TPosition";
 import { TILE_SIZE } from "../maps/TerrainVariables";
@@ -13,7 +13,6 @@ export default class PathfindingUtils {
     }
 
     private getPathFinding(from: TPosition, to: TPosition): number[][] {
-        const grid: PF.Grid = new PF.Grid(this.PFMap);
         const finder = new PF.AStarFinder();
 
         const startX = from.x;
@@ -22,10 +21,15 @@ export default class PathfindingUtils {
         const endY = to.y;
 
         const path = finder.findPath(
-            startX, startY, endX, endY, grid
+            startX, startY, endX, endY, this.getPFGrid()
         );
 
         return path;
+    }
+
+    private getPFGrid (): Grid {
+        const grid: Grid = new Grid(this.PFMap);
+        return grid.clone()
     }
     /**
      * Donnes le pathFindings en coordonnées directes.

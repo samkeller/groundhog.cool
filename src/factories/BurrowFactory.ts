@@ -21,7 +21,7 @@ export function createBurrow(ecs: ECS, position: TPosition, texture: Texture) {
     ecs.addComponent(entity, new DrawableComponent(new Sprite({
         texture,
         width: TILE_SIZE,
-        height: TILE_SIZE * ratio
+        height: TILE_SIZE * ratio,
     })));
     ecs.addComponent(entity, new FoodComponent(1000))
     return entity;
