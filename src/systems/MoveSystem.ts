@@ -41,7 +41,7 @@ export function MoveSystem(ecs: ECS, map: TMap, context: TickContext) {
     ecs.removeComponent(e, MoveIntentComponent);
 
     // Regardes si c'était un moveToIntent
-    const moveToIntentComponent = ecs.getComponent(e, MoveToIntentComponent);
+    const moveToIntentComponent = ecs.getComponent(e, MoveToIntentComponent) as MoveToIntentComponent | undefined;
 
     if (
       moveToIntentComponent &&

@@ -1,3 +1,4 @@
+import { TILE_SIZE } from "../maps/TerrainVariables";
 import TPosition from "../types/TPosition";
 
 /**
@@ -12,4 +13,11 @@ export function directionBetweenPoints(from: TPosition, to: TPosition): number {
     const rad = Math.atan2(dx, dy)
 
     return (rad * 180 / Math.PI + 360) % 360;
+}
+
+
+export function positionsAreEqual(a: TPosition, b: TPosition) {
+    // Utilise une tolérance adaptée à la taille d'un tile
+    const tolerance = TILE_SIZE / 4;
+    return Math.abs(a.x - b.x) < tolerance && Math.abs(a.y - b.y) < tolerance;
 }

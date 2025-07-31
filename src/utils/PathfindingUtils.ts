@@ -1,4 +1,4 @@
-import PF, { Grid } from "pathfinding";
+import { AStarFinder, DiagonalMovement, Grid, Heuristic, JumpPointFinder } from "pathfinding";
 import { TMap } from "../types/TMap";
 import TPosition from "../types/TPosition";
 import { TILE_SIZE } from "../maps/TerrainVariables";
@@ -13,7 +13,11 @@ export default class PathfindingUtils {
     }
 
     private getPathFinding(from: TPosition, to: TPosition): number[][] {
-        const finder = new PF.AStarFinder();
+        const finder = new AStarFinder({
+            heuristic: Heuristic.manhattan,
+            diagonalMovement: DiagonalMovement.Always,
+            dontCrossCorners: true
+        });
 
         const startX = from.x;
         const startY = from.y;

@@ -17,6 +17,7 @@ import BurrowSystem from './systems/BurrowSystem';
 import VisionSystem from './systems/VisionSystem';
 import TickContext from './assets/context/TickContext';
 import getTestMap from './maps/TestMap1';
+import PathSystem from './systems/PathSystem';
 
 (async () => {
     // Déjà initialisé, on ne fait rien
@@ -78,6 +79,7 @@ import getTestMap from './maps/TestMap1';
 
         // Resolution
         MoveToSystem(ecs, dataMap)
+        PathSystem(ecs)
         MoveSystem(ecs, dataMap, context)
         SpawnSystem(ecs, context)
         VisionSystem(ecs, context)
