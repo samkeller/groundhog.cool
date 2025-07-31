@@ -23,6 +23,6 @@ export function createBurrow(ecs: ECS, position: TPosition, texture: Texture) {
         width: TILE_SIZE,
         height: TILE_SIZE * ratio,
     })));
-    ecs.addComponent(entity, new FoodComponent(1000))
+    ecs.addComponent(entity, new FoodComponent(100))
     return entity;
 }

@@ -4,7 +4,6 @@ import getDataMap from './maps/SimpleMap';
 import MapDraw from './maps/MapDraw';
 import { ECS } from "./ECS";
 import DrawSystem from "./systems/DrawSystem";
-import TickSystem from "./systems/TickSystem";
 import TreeSystem from "./systems/TreeSystem";
 import GroundhogSystem from "./systems/GroundhogSystem";
 import { MoveSystem } from './systems/MoveSystem';
@@ -13,10 +12,10 @@ import BurrowTagComponent from './components/tags/BurrowTagComponent';
 import PositionComponent from './components/PositionComponent';
 import { createPlayer } from './factories/PlayerFactory';
 import OwnedByComponent from './components/relations/OwnedByComponent';
-import TickContext from './systems/TickContext';
 import { SpawnSystem } from './systems/SpawnSystem';
 import BurrowSystem from './systems/BurrowSystem';
-import GroundhogTagComponent from './components/tags/GroundhogTagComponent';
+import VisionSystem from './systems/VisionSystem';
+import TickContext from './assets/context/TickContext';
 
 (async () => {
     // Déjà initialisé, on ne fait rien
@@ -67,26 +66,22 @@ import GroundhogTagComponent from './components/tags/GroundhogTagComponent';
     gameContainer.y = centerY - burrowPos.y;
 
     const groundHogAsset = await Assets.load("assets/images/groundhog.png")
-    app.ticker.speed = 0.5
+    const context = new TickContext(dataMap, groundHogAsset)
+
     // Boucle principale ECS
+    app.ticker.speed = 0.5
     app.ticker.add(() => {
-        const context: TickContext = {
-            map: dataMap,
-            assets: {
-                groundhog: groundHogAsset
-            }
-        }
 
         // Intent
-        TickSystem(ecs, context);
         TreeSystem(ecs);
         GroundhogSystem(ecs);
         BurrowSystem(ecs);
 
         // Resolution
         MoveToSystem(ecs, dataMap)
-        MoveSystem(ecs, dataMap)
+        MoveSystem(ecs, dataMap, context)
         SpawnSystem(ecs, context)
+        VisionSystem(ecs, context)
 
         // Draw
         DrawSystem(ecs, objectContainer);

@@ -11,6 +11,7 @@ import OwnedByComponent from "../components/relations/OwnedByComponent";
 import CanMoveComponent from "../components/CanMoveComponent";
 import { randomFloatFromInterval, randomIntFromInterval } from "../utils/MathUtils";
 import { TILE_SIZE } from "../maps/TerrainVariables";
+import VisionComponent from "../components/VisionComponent";
 
 export function createGroundhog(
     ecs: ECS,
@@ -38,12 +39,10 @@ export function createGroundhog(
     ));
     ecs.addComponent(entity, new MoveIntentComponent());
     ecs.addComponent(entity, new OwnedByComponent(playerId))
+    ecs.addComponent(entity, new VisionComponent([]))
 
     const burrowPos = ecs.getComponent(spawnBurrow, PositionComponent)
     if (!burrowPos) throw new Error("Burrow has no position!");
-    ecs.addComponent(entity, new BurrowHomeComponent({
-        x: burrowPos.x,
-        y: burrowPos.y,
-    }));
+    ecs.addComponent(entity, new BurrowHomeComponent(burrowPos));
     return entity;
 }

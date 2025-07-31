@@ -1,18 +1,18 @@
-import FoodComponent from "../components/FoodComponent";
+import TickContext from "../assets/context/TickContext";
 import SpawnIntentComponent from "../components/intents/SpawnIntentComponent";
-import OwnedByComponent from "../components/relations/OwnedByComponent";
-import GroundhogTagComponent from "../components/tags/GroundhogTagComponent";
-import { ECS } from "../ECS";
+import VisionComponent from "../components/VisionComponent";
+import { ECS, Entity } from "../ECS";
 import { createGroundhog } from "../factories/GroundhogFactory";
-import TickContext from "./TickContext";
 
 export function SpawnSystem(ecs: ECS, context: TickContext) {
     const spawnIntentsIds = ecs.getEntitiesWith(SpawnIntentComponent)
     for (const intentId of spawnIntentsIds) {
+        let created: Entity | null = null;
+
         const spawnIntent = ecs.getComponent(intentId, SpawnIntentComponent)
         if (!spawnIntent) return;
         if (spawnIntent.entity === "groundhog") {
-            createGroundhog(
+            created = createGroundhog(
                 ecs,
                 spawnIntent.at,
                 context.assets.groundhog,
@@ -20,6 +20,8 @@ export function SpawnSystem(ecs: ECS, context: TickContext) {
                 spawnIntent.ownerId
             );
 
+            // Ajout dans le contexte
+            context.registerInSpatialIndex(created, spawnIntent.at)
             ecs.removeComponent(spawnIntent.fromBurrow, SpawnIntentComponent)
         }
     }

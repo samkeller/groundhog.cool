@@ -1,0 +1,35 @@
+import TickContext from "../assets/context/TickContext";
+import PositionComponent from "../components/PositionComponent";
+import VisionComponent from "../components/VisionComponent";
+import { Component, ECS } from "../ECS";
+import { TILE_SIZE } from "../maps/TerrainVariables";
+
+const VISION_RANGE = 2 * TILE_SIZE
+
+export default function VisionSystem(ecs: ECS, ctx: TickContext) {
+    const entitiesWithVision = ecs.getEntitiesWith(VisionComponent, PositionComponent);
+
+    for (const e of entitiesWithVision) {
+        const vision = ecs.getComponent(e, VisionComponent)!;
+        const position = ecs.getComponent(e, PositionComponent)!;
+
+        const cx = Math.floor(position.x / TILE_SIZE);
+        const cy = Math.floor(position.y / TILE_SIZE);
+        const radius = Math.floor(VISION_RANGE / TILE_SIZE);
+
+        const visibles: Component[] = [];
+
+        for (let dx = -radius; dx <= radius; dx++) {
+            for (let dy = -radius; dy <= radius; dy++) {
+                const key = ctx.spatialIndexKeyBuilder({ x: dx, y: dy });
+                const entitiesAtTile = ctx.spatialIndex.get(key);
+                if (entitiesAtTile) {
+                    for (const id of entitiesAtTile) {
+                        visibles.push(id);
+                    }
+                }
+            }
+        }
+        vision.visibles = visibles;
+    }
+}

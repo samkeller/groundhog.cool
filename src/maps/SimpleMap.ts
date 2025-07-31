@@ -73,6 +73,7 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
                         burrowTexture
                     )
                     burrowPlaced = true;
+                    break;
                 }
                 const treePerCell = treePer[y * gridWidth + x]
 

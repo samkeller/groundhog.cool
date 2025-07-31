@@ -5,17 +5,19 @@ import EnergyComponent from "../components/EnergyComponent";
 import { TMap } from "../types/TMap";
 import MoveUtils from "../utils/MoveUtils";
 import CanMoveComponent from "../components/CanMoveComponent";
+import TickContext from "../assets/context/TickContext";
 
-export function MoveSystem(ecs: ECS, map: TMap) {
+export function MoveSystem(ecs: ECS, map: TMap, context: TickContext) {
   const entities = ecs.getEntitiesWith(MoveIntentComponent);
 
   for (const e of entities) {
-    const pos = ecs.getComponent(e, PositionComponent)!;
+    const positionComponent = ecs.getComponent(e, PositionComponent)!;
     const move = ecs.getComponent(e, MoveIntentComponent)!;
     const energy = ecs.getComponent(e, EnergyComponent);
     const canMoveComponent = ecs.getComponent(e, CanMoveComponent);
 
-    const result = new MoveUtils().findValidDirection(map, pos, move.speed, move.rotation);
+    const posCopy = {...positionComponent}
+    const result = new MoveUtils().findValidDirection(map, positionComponent, move.speed, move.rotation);
 
     if (!result) {
       // Pas de déplacement possible
@@ -23,8 +25,8 @@ export function MoveSystem(ecs: ECS, map: TMap) {
     }
 
     // Mise à jour position + rotation
-    pos.x = result.nextPosition.x;
-    pos.y = result.nextPosition.y;
+    positionComponent.x = result.nextPosition.x;
+    positionComponent.y = result.nextPosition.y;
     move.rotation = result.nextDirection;
 
     // Énergie
@@ -38,5 +40,7 @@ export function MoveSystem(ecs: ECS, map: TMap) {
 
     // Nettoyer l'intention après application
     ecs.removeComponent(e, MoveIntentComponent);
+    // Update contexte
+    context.updateSpatialIndex(e, posCopy, result.nextPosition)
   }
 }
