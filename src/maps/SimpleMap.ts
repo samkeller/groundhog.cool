@@ -63,12 +63,23 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
                     x < maxCenterX &&
                     Math.random() < 0.10 &&
                     !burrowPlaced) {
-                    tile.component = createBurrow(ecs, x * TILE_SIZE, y * TILE_SIZE, burrowTexture)
+                    tile.component = createBurrow(ecs,
+                        {
+                            x: x * TILE_SIZE,
+                            y: y * TILE_SIZE
+                        },
+                        burrowTexture
+                    )
                     burrowPlaced = true;
                 }
 
                 if (Math.random() < 0.05) {
-                    tile.component = createTree(ecs, tile.position.x * TILE_SIZE, tile.position.y * TILE_SIZE, appleTreeTexture)
+                    tile.component = createTree(ecs,
+                        {
+                            x: tile.position.x * TILE_SIZE,
+                            y: tile.position.y * TILE_SIZE
+                        },
+                        appleTreeTexture)
                 }
             }
         }

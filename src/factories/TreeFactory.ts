@@ -4,16 +4,36 @@ import DrawableComponent from "../components/DrawableComponent";
 import TreeTagComponent from "../components/tags/TreeTagComponent";
 import FoodComponent from "../components/FoodComponent";
 import { Sprite, Texture } from "pixi.js";
+import { TILE_SIZE } from "../maps/TerrainVariables";
+import { randomFloatFromInterval } from "../utils/MathUtils";
+import TPosition from "../types/TPosition";
 
-export function createTree(ecs: ECS, x: number, y: number, texture: Texture) {
+export function createTree(ecs: ECS, position: TPosition, texture: Texture) {
+
     const entity = ecs.createEntity();
+
     ecs.addComponent(entity, new TreeTagComponent());
-    ecs.addComponent(entity, new PositionComponent(x, y));
-    ecs.addComponent(entity, new DrawableComponent(new Sprite({
-        texture,
-        width: 1024 / 50,
-        height: 1536 / 50
-    })));
+    ecs.addComponent(entity, new PositionComponent({
+        x: position.x + TILE_SIZE / 2,
+        y: position.y + TILE_SIZE / 2,
+    }));
+    ecs.addComponent(entity, new DrawableComponent(createSpriteForTile(texture)));
     ecs.addComponent(entity, new FoodComponent(0));
     return entity;
+}
+
+export function createSpriteForTile(texture: Texture): Sprite {
+    const sprite = new Sprite(texture);
+
+    // Adapter à la largeur de tile, conserver le ratio d'origine
+    const scaleYFactor = randomFloatFromInterval(1, 1.5)
+    const ratio = texture.height / texture.width;
+    sprite.width = TILE_SIZE;
+    sprite.height = TILE_SIZE * ratio * scaleYFactor;
+
+    sprite.zIndex = 5;
+    // Ancrage centré en bas pour coller le pied à la tuile
+    sprite.anchor.set(0.5, 0.8);
+
+    return sprite;
 }

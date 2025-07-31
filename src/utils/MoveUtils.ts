@@ -1,4 +1,3 @@
-// import Drawable from "../game/entities/types/Drawable";
 import { MOUNTAIN_HEIGHT, TILE_SIZE, WATER_HEIGHT } from "../maps/TerrainVariables";
 import { TMap } from "../types/TMap";
 import TPosition from "../types/TPosition";

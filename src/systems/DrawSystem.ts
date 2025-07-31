@@ -11,16 +11,23 @@ export default function DrawSystem(ecs: ECS, container: Container) {
         const position = ecs.getComponent(entity, PositionComponent);
         const canMoveComponent = ecs.getComponent(entity, CanMoveComponent);
 
+
         if (drawable && position) {
+            if (!drawable.initialized) {
+                if (drawable.sprite.anchor.x === 0 && drawable.sprite.anchor.y === 0)
+                    drawable.sprite.anchor.set(0.5, 0.5);
+
+                drawable.initialized = true;
+            }
             drawable.sprite.x = position.x;
             drawable.sprite.y = position.y;
+
             if (canMoveComponent) {
                 drawable.sprite.angle = canMoveComponent.direction
             }
             if (!container.children.includes(drawable.sprite)) {
                 container.addChild(drawable.sprite);
             }
-            drawable.sprite.anchor.set(0.5, 0.5);
         }
     }
 }

@@ -4,11 +4,7 @@ import EnergyComponent from "../components/EnergyComponent";
 import MoveIntentComponent from "../components/intents/MoveIntentComponent";
 import BurrowHomeComponent from "../components/BurrowHomeComponent";
 import MoveToIntentComponent from "../components/intents/MoveToIntentComponent";
-import PositionComponent from "../components/PositionComponent";
 import CanMoveComponent from "../components/CanMoveComponent";
-import MoveUtils from "../utils/MoveUtils";
-import TickContext from "./TickContext";
-import { TMap } from "../types/TMap";
 
 export default function GroundhogSystem(ecs: ECS) {
     // const result: { entity: Entity, intent: TTickIntent }[] = [];

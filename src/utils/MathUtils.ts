@@ -1,11 +1,21 @@
 /**
- * Renvoies un nombre entre deux autres
+ * Renvoies un nombre entier entre deux autres
  * @param min 
  * @param max 
  * @returns 
  */
 export function randomIntFromInterval(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+    return Math.floor(randomFloatFromInterval(min, max));
+}
+
+/**
+ * Renvoies un float entre deux nombres
+ * @param min 
+ * @param max 
+ * @returns 
+ */
+export function randomFloatFromInterval(min: number, max: number) {
+    return Math.random() * (max - min) + min;
 }
 
 
