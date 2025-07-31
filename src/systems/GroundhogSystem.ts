@@ -17,35 +17,41 @@ export default function GroundhogSystem(ecs: ECS) {
         const energyComponent = ecs.getComponent(e, EnergyComponent)!;
         const burrowHomeComponent = ecs.getComponent(e, BurrowHomeComponent)!;
         const canMoveComponent = ecs.getComponent(e, CanMoveComponent)!;
-        const visionComponent = ecs.getComponent(e, VisionComponent)!;
+        const moveToIntentComponent = ecs.getComponent(e, MoveToIntentComponent);
 
         const speed = energyComponent.energy / 100;
-
-        for (const targetId of visionComponent.visibles) {
-            const isTreeComponent = ecs.getComponent(targetId, TreeTagComponent);
-            const treePositionComponent = ecs.getComponent(targetId, PositionComponent)!;
-            const foodComponent = ecs.getComponent(targetId, FoodStockComponent)!;
-
-            if (isTreeComponent && foodComponent.amount > foodComponent.amountMax / 10) {
-                console.log("j'ai trouvé un arbre super")
-                ecs.addComponent(e, new MoveToIntentComponent({ ...treePositionComponent }));
-                break; // une cible suffit
-            }
-        }
-
-
-        // Fatigue -> Rentre à la base
-        if (energyComponent.energy < 10) {
+        if (energyComponent.energy < 10) { // Fatigue -> Rentre à la base
+            // Si déjà une activité en cours -> arrête
+            if (moveToIntentComponent)
+                ecs.removeComponent(e, MoveToIntentComponent)
             ecs.addComponent(e, new MoveToIntentComponent(burrowHomeComponent.position))
-        }
-        // Random déplacements
-        else if (Math.random() < 0.5) {
-            const newDirection = (canMoveComponent.direction + Math.random() * 20 - 10) % 360;
-            if (newDirection) {
-                ecs.addComponent(e, new MoveIntentComponent(speed, newDirection))
+            return;
+        } 
+        
+        if (!moveToIntentComponent) { // Cherche un arbre
+            const visionComponent = ecs.getComponent(e, VisionComponent)!;
+            for (const targetId of visionComponent.visibles) {
+                const isTreeComponent = ecs.getComponent(targetId, TreeTagComponent);
+                const treePositionComponent = ecs.getComponent(targetId, PositionComponent)!;
+                const foodComponent = ecs.getComponent(targetId, FoodStockComponent)!;
+                if (
+                    isTreeComponent &&
+                    foodComponent.amount > foodComponent.amountMax / 10
+                ) {
+                    ecs.addComponent(e, new MoveToIntentComponent({ ...treePositionComponent }));
+                    return; // une cible suffit
+                }
             }
-        } else {
-            ecs.addComponent(e, new MoveIntentComponent(0, canMoveComponent.direction))
         }
+
+        if (Math.random() < 0.5) { // Random déplacements
+            // TODO - MoveUtils.findValidDirection()
+            const newDirection = (canMoveComponent.direction + Math.random() * 20 - 10) % 360;
+            ecs.addComponent(e, new MoveIntentComponent(speed, newDirection))
+            return;
+
+        }
+
+        ecs.addComponent(e, new MoveIntentComponent(0, canMoveComponent.direction))
     }
 }

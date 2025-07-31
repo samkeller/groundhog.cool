@@ -15,8 +15,11 @@ export default function VisionSystem(ecs: ECS, ctx: TickContext) {
 
         const visibles: Entity[] = [];
 
-        for (let dx = -VISION_RANGE; dx <= VISION_RANGE; dx++) {
-            for (let dy = -VISION_RANGE; dy <= VISION_RANGE; dy++) {
+        const [minXCheck, maxXCheck] = [position.x - VISION_RANGE, position.x + VISION_RANGE]
+        const [minYCheck, maxYCheck] = [position.y - VISION_RANGE, position.y + VISION_RANGE]
+
+        for (let dx = minXCheck; dx <= maxXCheck; dx++) {
+            for (let dy = minYCheck; dy <= maxYCheck; dy++) {
                 const key = ctx.spatialIndexKeyBuilder({ x: dx, y: dy });
                 const entitiesAtTile = ctx.spatialIndex.get(key);
                 if (entitiesAtTile) {

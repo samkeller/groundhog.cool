@@ -38,7 +38,7 @@ import TickContext from './assets/context/TickContext';
     const ecs = new ECS();
 
     // Map
-    const dataMap = await getDataMap(ecs)
+    const dataMap = await getDataMap(ecs) // DataMap = tiles !
     const drawnMap = await MapDraw(dataMap)
 
     const objectContainer = new Container()

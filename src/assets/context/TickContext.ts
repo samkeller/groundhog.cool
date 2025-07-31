@@ -2,6 +2,7 @@ import { Texture } from "pixi.js";
 import { TMap } from "../../types/TMap";
 import { Entity } from "../../ECS";
 import TPosition from "../../types/TPosition";
+import { TILE_SIZE } from "../../maps/TerrainVariables";
 
 export default class TickContext {
     map: TMap
@@ -49,14 +50,22 @@ export default class TickContext {
         this.spatialIndex.get(key)!.add(entityId);
     }
 
+    /**
+     * Attention, la dataMap ici ne contient que la vue "tiles", pas la vue "pixels".
+     * @param dataMap 
+     * @returns 
+     */
     private BuildSpatialIndex(dataMap: TMap): TickContext["spatialIndex"] {
-
         const spatialIndex: Map<string, Set<Entity>> = new Map();
-        for (let y = 0; y < dataMap.length; y++) {
-            for (let x = 0; x < dataMap[y].length; x++) {
+        for (let y = 0; y < dataMap.length; y++) { // Columns
+            for (let x = 0; x < dataMap[y].length; x++) { // Rows
                 const cell = dataMap[y][x]
-                const key = this.spatialIndexKeyBuilder({ x, y });
                 if (cell.component) {
+
+                    const key = this.spatialIndexKeyBuilder({
+                        x: x * TILE_SIZE,
+                        y: y * TILE_SIZE
+                    });
                     spatialIndex.set(key, new Set());
                     spatialIndex.get(key)!.add(cell.component);
                 }

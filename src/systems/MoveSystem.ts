@@ -6,17 +6,18 @@ import { TMap } from "../types/TMap";
 import MoveUtils from "../utils/MoveUtils";
 import CanMoveComponent from "../components/CanMoveComponent";
 import TickContext from "../assets/context/TickContext";
+import MoveToIntentComponent from "../components/intents/MoveToIntentComponent";
 
 export function MoveSystem(ecs: ECS, map: TMap, context: TickContext) {
-  const entities = ecs.getEntitiesWith(MoveIntentComponent);
+  const entities = ecs.getEntitiesWith(MoveIntentComponent, PositionComponent, CanMoveComponent);
 
   for (const e of entities) {
     const positionComponent = ecs.getComponent(e, PositionComponent)!;
     const move = ecs.getComponent(e, MoveIntentComponent)!;
     const energy = ecs.getComponent(e, EnergyComponent);
-    const canMoveComponent = ecs.getComponent(e, CanMoveComponent);
+    const canMoveComponent = ecs.getComponent(e, CanMoveComponent)!;
 
-    const posCopy = {...positionComponent}
+    const posCopy = { ...positionComponent }
     const result = new MoveUtils().findValidDirection(map, positionComponent, move.speed, move.rotation);
 
     if (!result) {
@@ -34,12 +35,21 @@ export function MoveSystem(ecs: ECS, map: TMap, context: TickContext) {
       energy.energy = Math.max(0, energy.energy - 0.1);
     }
 
-    if (canMoveComponent) {
-      canMoveComponent.direction = result.nextDirection
-    }
+    canMoveComponent.direction = result.nextDirection
 
     // Nettoyer l'intention après application
     ecs.removeComponent(e, MoveIntentComponent);
+
+    // Regardes si c'était un moveToIntent
+    const moveToIntentComponent = ecs.getComponent(e, MoveToIntentComponent);
+
+    if (
+      moveToIntentComponent &&
+      result.nextPosition.x === moveToIntentComponent.target.x &&
+      result.nextPosition.y === moveToIntentComponent.target.y
+    ) {
+      ecs.removeComponent(e, MoveToIntentComponent);
+    }
     // Update contexte
     context.updateSpatialIndex(e, posCopy, result.nextPosition)
   }

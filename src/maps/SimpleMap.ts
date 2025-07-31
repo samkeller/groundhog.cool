@@ -33,6 +33,7 @@ export default (async (ecs: ECS): Promise<TMap> => {
 
     const dataMapWithObjects = await addObjects(ecs, gridHeight, gridWidth, dataMap);
 
+    console.log(`[SimpleMap.ts] DataMap created, size=[width:${gridWidth}, height:${gridHeight}]`)
     return dataMapWithObjects
 })
 

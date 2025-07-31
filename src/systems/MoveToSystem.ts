@@ -8,7 +8,7 @@ import CanMoveComponent from "../components/CanMoveComponent";
 import PathfindingUtils from "../utils/PathfindingUtils";
 
 export function MoveToSystem(ecs: ECS, map: TMap) {
-    const entities = ecs.getEntitiesWith(PositionComponent, MoveToIntentComponent);
+    const entities = ecs.getEntitiesWith(PositionComponent, MoveToIntentComponent, CanMoveComponent);
 
     for (const e of entities) {
         const pos = ecs.getComponent(e, PositionComponent)!;
