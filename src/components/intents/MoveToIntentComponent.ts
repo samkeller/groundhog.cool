@@ -1,8 +1,7 @@
 import { Component } from "../../ECS";
 
-export default class MoveToIntentComponent  implements Component{
+export default class MoveToIntentComponent implements Component {
   constructor(
     public target: { x: number; y: number },
-    public speed: number
-  ) {}
+  ) { }
 }

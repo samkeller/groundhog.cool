@@ -1,4 +1,10 @@
-export function randomIntFromInterval(min: number, max: number) { // min and max included 
+/**
+ * Renvoies un nombre entre deux autres
+ * @param min 
+ * @param max 
+ * @returns 
+ */
+export function randomIntFromInterval(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 

@@ -7,8 +7,9 @@ import TPosition from "../types/TPosition";
  * @returns angle en degrés (0-360)
  */
 export function directionBetweenPoints(from: TPosition, to: TPosition): number {
-    // Obligé de corriger de -90 degrés car par défaut 0 = droite;
-    let deg = Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI - 90;
-    if (deg < 0) deg += 360;
-    return deg;
+    const dx = to.x - from.x;
+    const dy = from.y - to.y;       // inversion unique
+    const rad = Math.atan2(dx, dy)
+
+    return (rad * 180 / Math.PI + 360) % 360;
 }

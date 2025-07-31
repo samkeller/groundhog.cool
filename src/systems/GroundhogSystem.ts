@@ -25,7 +25,7 @@ export default function GroundhogSystem(ecs: ECS) {
         const speed = energyComponent.energy / 100;
 
         if (energyComponent.energy < 10) {
-            ecs.addComponent(e, new MoveToIntentComponent(burrowHomeComponent.position, speed))
+            ecs.addComponent(e, new MoveToIntentComponent(burrowHomeComponent.position))
         } else if (willMove) {
             const newDirection = (canMoveComponent.direction + Math.random() * 20 - 10) % 360;
             if (newDirection) {

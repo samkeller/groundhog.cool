@@ -9,6 +9,7 @@ import BurrowHomeComponent from "../components/BurrowHomeComponent";
 import TPosition from "../types/TPosition";
 import OwnedByComponent from "../components/relations/OwnedByComponent";
 import CanMoveComponent from "../components/CanMoveComponent";
+import { randomIntFromInterval } from "../utils/MathUtils";
 
 export function createGroundhog(
     ecs: ECS,
@@ -17,6 +18,7 @@ export function createGroundhog(
     spawnBurrow: Entity,
     playerId: Entity
 ) {
+    console.log(`[createGroundhog] - x:${position.x}, y:${position.y}`)
     const entity = ecs.createEntity();
     ecs.addComponent(entity, new GroundhogTagComponent());
     ecs.addComponent(entity, new PositionComponent(position.x, position.y));
@@ -25,8 +27,11 @@ export function createGroundhog(
         width: 1024 / 50,
         height: 1536 / 50
     })));
-    ecs.addComponent(entity, new EnergyComponent(100, 100));
-    ecs.addComponent(entity, new CanMoveComponent(0, 0.5));
+    ecs.addComponent(entity, new EnergyComponent(randomIntFromInterval(80, 100), 100));
+    ecs.addComponent(entity, new CanMoveComponent(
+        randomIntFromInterval(0, 360),
+        randomIntFromInterval(0.2, 0.8)
+    ));
     ecs.addComponent(entity, new MoveIntentComponent());
     ecs.addComponent(entity, new OwnedByComponent(playerId))
 

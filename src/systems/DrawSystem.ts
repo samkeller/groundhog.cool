@@ -20,8 +20,7 @@ export default function DrawSystem(ecs: ECS, container: Container) {
             if (!container.children.includes(drawable.sprite)) {
                 container.addChild(drawable.sprite);
             }
-        drawable.sprite.anchor.set(0.5, 0.5);
-
+            drawable.sprite.anchor.set(0.5, 0.5);
         }
     }
 }

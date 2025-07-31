@@ -6,6 +6,7 @@ import { Sprite, Texture } from "pixi.js";
 import FoodComponent from "../components/FoodComponent";
 
 export function createBurrow(ecs: ECS, x: number, y: number, texture: Texture) {
+    console.log(`[createBurrow] - x:${x}, y:${y}`)
     const entity = ecs.createEntity();
     ecs.addComponent(entity, new BurrowTagComponent());
     ecs.addComponent(entity, new PositionComponent(x, y));
@@ -14,6 +15,6 @@ export function createBurrow(ecs: ECS, x: number, y: number, texture: Texture) {
         width: 1024 / 50,
         height: 1536 / 50
     })));
-    ecs.addComponent(entity, new FoodComponent(100))
+    ecs.addComponent(entity, new FoodComponent(1000))
     return entity;
 }

@@ -23,10 +23,12 @@ export default class MoveUtils {
         nextDirection: number,
         nextPosition: TPosition
     } | undefined {
+        let MAX_LOOPS = 10
         let loops = 0;
         let nextDirection = rotation;
+        const increment = 360 / MAX_LOOPS
 
-        while (loops < 10) {
+        while (loops < MAX_LOOPS) {
             const testNext = this.getNextPosition(position, nextDirection, speed);
 
             const tileX = Math.floor(testNext.x / TILE_SIZE);
@@ -36,13 +38,12 @@ export default class MoveUtils {
                 const tile = map[tileY][tileX];
                 if (this.isWalkable(tile)) {
                     return {
-                        nextDirection,
+                        nextDirection: nextDirection,
                         nextPosition: testNext
                     };
                 }
             }
-
-            nextDirection = (nextDirection + 20) % 360;
+            nextDirection = (nextDirection + increment) % 360;
             loops++;
         }
 

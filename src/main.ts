@@ -67,6 +67,7 @@ import GroundhogTagComponent from './components/tags/GroundhogTagComponent';
     gameContainer.y = centerY - burrowPos.y;
 
     const groundHogAsset = await Assets.load("assets/images/groundhog.png")
+    app.ticker.speed = 0.5
     // Boucle principale ECS
     app.ticker.add(() => {
         const context: TickContext = {
@@ -76,13 +77,18 @@ import GroundhogTagComponent from './components/tags/GroundhogTagComponent';
             }
         }
 
+        // Intent
         TickSystem(ecs, context);
         TreeSystem(ecs);
         GroundhogSystem(ecs);
         BurrowSystem(ecs);
+
+        // Resolution
         MoveToSystem(ecs, dataMap)
         MoveSystem(ecs, dataMap)
         SpawnSystem(ecs, context)
+
+        // Draw
         DrawSystem(ecs, objectContainer);
 
         // TODO: Adapter DrawOverlxay pour ECS (ex: passer l'entité player)
