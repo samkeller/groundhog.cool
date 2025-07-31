@@ -52,6 +52,5 @@ export default function GroundhogSystem(ecs: ECS) {
 
         }
 
-        ecs.addComponent(e, new MoveIntentComponent(0, canMoveComponent.direction))
     }
 }

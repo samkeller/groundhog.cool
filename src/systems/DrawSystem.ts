@@ -11,7 +11,6 @@ export default function DrawSystem(ecs: ECS, container: Container) {
         const position = ecs.getComponent(entity, PositionComponent);
         const canMoveComponent = ecs.getComponent(entity, CanMoveComponent);
 
-
         if (drawable && position) {
             if (!drawable.initialized) {
                 if (drawable.sprite.anchor.x === 0 && drawable.sprite.anchor.y === 0)

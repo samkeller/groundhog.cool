@@ -27,7 +27,7 @@ export default class PathfindingUtils {
         return path;
     }
 
-    private getPFGrid (): Grid {
+    private getPFGrid(): Grid {
         const grid: Grid = new Grid(this.PFMap);
         return grid.clone()
     }
@@ -50,8 +50,8 @@ export default class PathfindingUtils {
             }
         ).map(step => {
             return {
-                x: step[0] * TILE_SIZE,
-                y: step[1] * TILE_SIZE
+                x: step[0] * TILE_SIZE + TILE_SIZE / 2,
+                y: step[1] * TILE_SIZE + TILE_SIZE / 2
             }
         })
     }

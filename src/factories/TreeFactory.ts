@@ -14,8 +14,8 @@ export function createTree(ecs: ECS, position: TPosition, texture: Texture) {
 
     ecs.addComponent(entity, new TreeTagComponent());
     ecs.addComponent(entity, new PositionComponent({
-        x: position.x + TILE_SIZE / 2,
-        y: position.y + TILE_SIZE / 2,
+        x: position.x,
+        y: position.y,
     }));
     ecs.addComponent(entity, new DrawableComponent(createSpriteForTile(texture)));
     ecs.addComponent(entity, new FoodStockComponent(0, 200));

@@ -68,8 +68,8 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
                     !burrowPlaced) {
                     tile.component = createBurrow(ecs,
                         {
-                            x: x * TILE_SIZE,
-                            y: y * TILE_SIZE
+                            x: x * TILE_SIZE + TILE_SIZE / 2,
+                            y: y * TILE_SIZE + TILE_SIZE / 2
                         },
                         burrowTexture
                     )
@@ -89,8 +89,8 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
                 ) {
                     tile.component = createTree(ecs,
                         {
-                            x: tile.position.x * TILE_SIZE,
-                            y: tile.position.y * TILE_SIZE
+                            x: tile.position.x * TILE_SIZE + TILE_SIZE / 2,
+                            y: tile.position.y * TILE_SIZE + TILE_SIZE / 2
                         },
                         appleTreeTexture)
                 }

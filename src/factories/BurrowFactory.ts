@@ -15,8 +15,8 @@ export function createBurrow(ecs: ECS, position: TPosition, texture: Texture) {
     const entity = ecs.createEntity();
     ecs.addComponent(entity, new BurrowTagComponent());
     ecs.addComponent(entity, new PositionComponent({
-        x: position.x + TILE_SIZE / 2,
-        y: position.y + TILE_SIZE / 2,
+        x: position.x,
+        y: position.y,
     }));
     ecs.addComponent(entity, new DrawableComponent(new Sprite({
         texture,

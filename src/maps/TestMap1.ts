@@ -38,15 +38,15 @@ export default async function getTestMap(): Promise<[ECS, TMap]> {
     // Terrier à gauche
     const burrowX = 2, burrowY = Math.floor(HEIGHT / 2);
     dataMap[burrowY][burrowX].component = createBurrow(ecs, {
-        x: burrowX * TILE_SIZE,
-        y: burrowY * TILE_SIZE
+        x: burrowX * TILE_SIZE + TILE_SIZE / 2,
+        y: burrowY * TILE_SIZE + TILE_SIZE / 2
     }, burrowTexture);
 
     // Arbre à droite
     const treeX = WIDTH - 3, treeY = Math.floor(HEIGHT / 2);
     dataMap[treeY][treeX].component = createTree(ecs, {
-        x: treeX * TILE_SIZE,
-        y: treeY * TILE_SIZE
+        x: treeX * TILE_SIZE + TILE_SIZE / 2,
+        y: treeY * TILE_SIZE + TILE_SIZE / 2
     }, appleTreeTexture);
 
     return [ecs, dataMap];
