@@ -1,4 +1,4 @@
-import { Component } from "../ECS"
+import { Component, Entity } from "../ECS"
 import TPosition from "./TPosition"
 
 type TMap = TTile[][]
@@ -7,7 +7,7 @@ interface TTile {
     height: number, // 0 - 1
     walkable: boolean,
     position: TPosition,
-    component: Component | null
+    component: Entity | null
 }
 
 export type { TMap, TTile }

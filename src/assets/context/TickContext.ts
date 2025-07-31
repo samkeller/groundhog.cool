@@ -1,6 +1,6 @@
 import { Texture } from "pixi.js";
 import { TMap } from "../../types/TMap";
-import { Component } from "../../ECS";
+import { Entity } from "../../ECS";
 import TPosition from "../../types/TPosition";
 
 export default class TickContext {
@@ -8,7 +8,7 @@ export default class TickContext {
     assets: {
         groundhog: Texture
     }
-    spatialIndex: Map<string, Set<Component>>
+    spatialIndex: Map<string, Set<Entity>>
 
     constructor(map: TMap, groundhog: Texture) {
         this.map = map;
@@ -51,7 +51,7 @@ export default class TickContext {
 
     private BuildSpatialIndex(dataMap: TMap): TickContext["spatialIndex"] {
 
-        const spatialIndex: Map<string, Set<Component>> = new Map();
+        const spatialIndex: Map<string, Set<Entity>> = new Map();
         for (let y = 0; y < dataMap.length; y++) {
             for (let x = 0; x < dataMap[y].length; x++) {
                 const cell = dataMap[y][x]

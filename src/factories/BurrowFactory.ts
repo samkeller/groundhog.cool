@@ -3,7 +3,7 @@ import PositionComponent from "../components/PositionComponent";
 import DrawableComponent from "../components/DrawableComponent";
 import BurrowTagComponent from "../components/tags/BurrowTagComponent";
 import { Sprite, Texture } from "pixi.js";
-import FoodComponent from "../components/FoodComponent";
+import FoodStockComponent from "../components/FoodStockComponent";
 import TPosition from "../types/TPosition";
 import { TILE_SIZE } from "../maps/TerrainVariables";
 
@@ -23,6 +23,6 @@ export function createBurrow(ecs: ECS, position: TPosition, texture: Texture) {
         width: TILE_SIZE,
         height: TILE_SIZE * ratio,
     })));
-    ecs.addComponent(entity, new FoodComponent(100))
+    ecs.addComponent(entity, new FoodStockComponent(100, 10000))
     return entity;
 }

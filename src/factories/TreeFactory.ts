@@ -2,7 +2,7 @@ import { ECS } from "../ECS";
 import PositionComponent from "../components/PositionComponent";
 import DrawableComponent from "../components/DrawableComponent";
 import TreeTagComponent from "../components/tags/TreeTagComponent";
-import FoodComponent from "../components/FoodComponent";
+import FoodStockComponent from "../components/FoodStockComponent";
 import { Sprite, Texture } from "pixi.js";
 import { TILE_SIZE } from "../maps/TerrainVariables";
 import { randomFloatFromInterval } from "../utils/MathUtils";
@@ -18,7 +18,7 @@ export function createTree(ecs: ECS, position: TPosition, texture: Texture) {
         y: position.y + TILE_SIZE / 2,
     }));
     ecs.addComponent(entity, new DrawableComponent(createSpriteForTile(texture)));
-    ecs.addComponent(entity, new FoodComponent(0));
+    ecs.addComponent(entity, new FoodStockComponent(0, 200));
     return entity;
 }
 

@@ -1,6 +1,6 @@
 import { ECS, Entity } from "../ECS";
 import BurrowTagComponent from "../components/tags/BurrowTagComponent";
-import FoodComponent from "../components/FoodComponent";
+import FoodStockComponent from "../components/FoodStockComponent";
 import PositionComponent from "../components/PositionComponent";
 import OwnedByComponent from "../components/relations/OwnedByComponent";
 import GroundhogTagComponent from "../components/tags/GroundhogTagComponent";
@@ -8,10 +8,10 @@ import { getSpawnCost } from "../utils/MathUtils";
 import SpawnIntentComponent from "../components/intents/SpawnIntentComponent";
 
 export default function BurrowSystem(ecs: ECS) {
-    const burrows: Entity[] = ecs.getEntitiesWith(BurrowTagComponent, FoodComponent, PositionComponent, OwnedByComponent);
+    const burrows: Entity[] = ecs.getEntitiesWith(BurrowTagComponent, FoodStockComponent, PositionComponent, OwnedByComponent);
 
     for (const entity of burrows) {
-        const food = ecs.getComponent(entity, FoodComponent);
+        const food = ecs.getComponent(entity, FoodStockComponent);
         const position = ecs.getComponent(entity, PositionComponent);
         const owner = ecs.getComponent(entity, OwnedByComponent);
 

@@ -1,6 +1,6 @@
-import { Component } from "../ECS";
+import { Component, Entity } from "../ECS";
 
 export default class VisionComponent implements Component {
 
-    constructor(public visibles: Component[]) {}
+    constructor(public visibles: Entity[]) {}
 }
