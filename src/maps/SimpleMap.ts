@@ -50,6 +50,8 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
         Math.floor(gridWidth / 2 + 5),
     ];
 
+    const treePer = perlin.generatePerlinNoise(gridWidth, gridHeight)
+
     // Draw 2 - Elements
     for (let y = 0; y < gridHeight; y++) {
         for (let x = 0; x < gridWidth; x++) {
@@ -72,8 +74,17 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
                     )
                     burrowPlaced = true;
                 }
+                const treePerCell = treePer[y * gridWidth + x]
 
-                if (Math.random() < 0.05) {
+                if (
+                    treePerCell > 0.85 ||
+                    (
+                        treePerCell > 0.6 &&
+                        tile.height > WATER_HEIGHT + 0.1 &&
+                        tile.height < MOUNTAIN_HEIGHT - 0.1
+                    ) ||
+                    Math.random() > 0.99
+                ) {
                     tile.component = createTree(ecs,
                         {
                             x: tile.position.x * TILE_SIZE,
