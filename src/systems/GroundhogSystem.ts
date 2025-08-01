@@ -15,27 +15,51 @@ import { BarComponent } from "../components/BarComponent";
 export default function GroundhogSystem(ecs: ECS) {
     const groundhogs: Entity[] = ecs.getEntitiesWith(GroundhogTagComponent);
 
-    for (const e of groundhogs) {
+    lookup: for (const e of groundhogs) {
         const energyComponent = ecs.getComponent(e, EnergyComponent)!;
         const foodStockComponent = ecs.getComponent(e, FoodStockComponent)!;
-        const burrowHomeComponent = ecs.getComponent(e, BurrowHomeComponent)!;
+        const burrowHomeEntity = ecs.getComponent(e, BurrowHomeComponent)?.burrow!;
+        const burrowHomePosition = ecs.getComponent(burrowHomeEntity, PositionComponent)!;
         const canMoveComponent = ecs.getComponent(e, CanMoveComponent)!;
         const positionComponent = ecs.getComponent(e, PositionComponent)!;
         const moveToIntentComponent = ecs.getComponent(e, MoveToIntentComponent);
 
         const speed = energyComponent.energy / 100;
+        const wantToStockFood = foodStockComponent.amount >= foodStockComponent.amountMax * 0.50
+        if (foodStockComponent.amount > 0) {
+            console.log(foodStockComponent.amount + " de stock de bouffe", wantToStockFood)
+        }
         if (
-            energyComponent.energy < 10 &&
-            !positionsAreEqual(positionComponent, burrowHomeComponent.position) &&
+            !positionsAreEqual(positionComponent, burrowHomePosition) &&
             (
                 !moveToIntentComponent ||
-                moveToIntentComponent?.target !== burrowHomeComponent.position
+                moveToIntentComponent?.target !== burrowHomePosition
+            ) &&
+            (
+                energyComponent.energy < 10 || // 1. Plus d'énergie
+                wantToStockFood // 2. Inventaire plein
             )
         ) { // Fatigue -> Rentre à la base
-            console.log("je veux retourner à la maison !")
+            logger(e, `Je veux retourner à la maison pour 
+                ${wantToStockFood ? "stocker de la nourriture " : ""}
+                ${energyComponent.energy < 10 ? "me reposer " : ""}
+                !`)
             // Si déjà une activité en cours -> arrête
             ecs.removeComponent(e, MoveToIntentComponent)
-            ecs.addComponent(e, new MoveToIntentComponent(burrowHomeComponent.position))
+            ecs.addComponent(e, new MoveToIntentComponent(burrowHomePosition))
+            continue;
+        }
+
+        if (
+            positionsAreEqual(positionComponent, burrowHomePosition) &&
+            wantToStockFood
+        ) {
+            // Déposer la nourriture dans le terrier
+            logger(e, `Je suis au terrier, je vide !`)
+
+            const burrowFoodStock = ecs.getComponent(burrowHomeEntity, FoodStockComponent)!;
+            burrowFoodStock.amount += foodStockComponent.amount;
+            foodStockComponent.amount = 0;
             continue;
         }
 
@@ -43,16 +67,48 @@ export default function GroundhogSystem(ecs: ECS) {
             const visionComponent = ecs.getComponent(e, VisionComponent)!;
             for (const targetId of visionComponent.visibles) {
                 const isTreeComponent = ecs.getComponent(targetId, TreeTagComponent);
-                const treePositionComponent = ecs.getComponent(targetId, PositionComponent)!;
-                const foodComponent = ecs.getComponent(targetId, FoodStockComponent)!;
-                if (
-                    isTreeComponent &&
-                    foodComponent.amount > foodComponent.amountMax / 10 &&
-                    !positionsAreEqual(positionComponent, treePositionComponent)
-                ) {
-                    console.log("j'ai trouvé un arbre !")
-                    ecs.addComponent(e, new MoveToIntentComponent({ ...treePositionComponent }));
-                    continue; // une cible suffit
+                if (isTreeComponent) {
+                    const treePositionComponent = ecs.getComponent(targetId, PositionComponent)!;
+
+                    const isAlreadyOnOtherTree = visionComponent.visibles.some(v => {
+                        const isTreeComponent = ecs.getComponent(v, TreeTagComponent);
+                        if (!isTreeComponent) return false;
+                        const tempTreePositionComponent = ecs.getComponent(v, PositionComponent)!;
+
+                        return positionsAreEqual(positionComponent, tempTreePositionComponent)
+                    })
+
+                    const treeFoodStock = ecs.getComponent(targetId, FoodStockComponent)!
+                    if (
+                        !positionsAreEqual(positionComponent, treePositionComponent) &&
+                        !isAlreadyOnOtherTree
+                    ) {
+
+                        logger(e, `J'ai trouvé un arbre en [x:${treePositionComponent.x}, y${treePositionComponent.y}, j'y go !]`)
+                        ecs.addComponent(e, new MoveToIntentComponent({ ...treePositionComponent }));
+                        continue lookup;
+                    } else if (
+                        positionsAreEqual(positionComponent, treePositionComponent)
+                    ) {
+                        logger(e, `Je suis dans l'arbre, je récolte !`);
+
+                        const foodToCollect = Math.min(
+                            treeFoodStock.amount,
+                            foodStockComponent.amountMax - foodStockComponent.amount
+                        );
+                        treeFoodStock.amount -= foodToCollect;
+                        foodStockComponent.amount += foodToCollect;
+
+                        // Log the updated food stock for debugging
+                        logger(e, `Nourriture récoltée: ${foodToCollect}, Stock actuel: ${foodStockComponent.amount}`);
+                        continue lookup; // Quitte la boucle principale après récolte
+                    }
+                    // console.log("on devrait pas être la ?",
+                    //     positionsAreEqual(positionComponent, treePositionComponent),
+                    //     treeFoodStock.amount < treeFoodStock.amountMax
+
+                    // )
+                    continue lookup; // Quitte la boucle principale après avoir trouvé un arbre valide
                 }
             }
         }
@@ -72,16 +128,18 @@ export default function GroundhogSystem(ecs: ECS) {
         const FOOD_ENERGY_MULTIPLIER = 5;
         const missingEnergy = energyComponent.maxEnergy - energyComponent.energy;
         if (
-            energyComponent.energy < energyComponent.maxEnergy &&
+            energyComponent.energy < energyComponent.maxEnergy / 2 &&
             foodStockComponent.amount > 0 &&
             foodStockComponent.amount * FOOD_ENERGY_MULTIPLIER > missingEnergy
         ) {
+
             // Calculer la quantité de nourriture nécessaire pour restaurer l'énergie manquante
             const foodNeeded = Math.min(
                 foodStockComponent.amount,
                 Math.ceil(missingEnergy / FOOD_ENERGY_MULTIPLIER)
             );
             const energyToRestore = foodNeeded * FOOD_ENERGY_MULTIPLIER;
+            logger(e, `Je mange ${foodNeeded} de nourritures (${energyComponent} d'énergie)`)
 
             // Consommer la nourriture et restaurer l'énergie
             foodStockComponent.amount -= foodNeeded;
@@ -90,5 +148,12 @@ export default function GroundhogSystem(ecs: ECS) {
                 energyComponent.energy = energyComponent.maxEnergy;
             }
         }
+    }
+
+    function handleGroundhogSeeTree() {
+
+    }
+    function logger(e: Entity, action: string) {
+        console.log(`GroundHogSystem - e:${e} - ${action}`)
     }
 }

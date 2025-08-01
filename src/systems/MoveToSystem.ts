@@ -5,6 +5,7 @@ import { TileMap } from "../types/TileMap";
 import CanMoveComponent from "../components/CanMoveComponent";
 import PathfindingUtils from "../utils/PathfindingUtils";
 import PathComponent from "../components/PathComponent";
+import { positionsAreEqual } from "../utils/PathUtils";
 
 export default function MoveToSystem(ecs: ECS, map: TileMap) {
     // Instanciation unique de PathfindingUtils pour ce tick
@@ -16,6 +17,12 @@ export default function MoveToSystem(ecs: ECS, map: TileMap) {
         const moveTo = ecs.getComponent(e, MoveToIntentComponent)!;
         let pathComponent = ecs.getComponent(e, PathComponent);
 
+        // On est arrivés
+        if (positionsAreEqual(pos, moveTo.target)) {
+            ecs.removeComponent(e, MoveToIntentComponent);
+            continue;
+        }
+        
         // Cas où le chemin doit être recalculé :
         // - Pas de PathComponent
         // - Chemin vide

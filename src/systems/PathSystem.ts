@@ -12,18 +12,17 @@ export default function PathSystem(ecs: ECS) {
         const path = ecs.getComponent(e, PathComponent)!;
         const pos = ecs.getComponent(e, PositionComponent)!;
         const canMove = ecs.getComponent(e, CanMoveComponent)!;
-        if (!path.path.length) {
-            ecs.removeComponent(e, PathComponent);
-            continue;
-        }
+
         const nextStep = path.path[0];
         if (positionsAreEqual(pos, nextStep)) {
-            // Atteint l'étape, on passe à la suivante
+            // Etape atteinte !
             path.path.shift();
-            if (!path.path.length) {
-                ecs.removeComponent(e, PathComponent);
-                ecs.removeComponent(e, MoveIntentComponent);
-            }
+        }
+        
+        if (!path.path.length) {
+            // Path Vide
+            ecs.removeComponent(e, PathComponent);
+            ecs.removeComponent(e, MoveIntentComponent);
             continue;
         }
 

@@ -23,7 +23,7 @@ export default async function getTestMap(assets: GameAssets): Promise<[ECS, Tile
             };
             // Mur vertical au centre
             if (x === Math.floor(WIDTH / 2) &&
-                (y < 13 && y > 2)
+                (y < 11 && y > 3)
             ) {
                 cellData.walkable = false;
                 cellData.height = 1; // montagne
@@ -33,7 +33,7 @@ export default async function getTestMap(assets: GameAssets): Promise<[ECS, Tile
     }
 
     // Terrier à gauche
-    const burrowX = 2, burrowY = Math.floor(HEIGHT / 2);
+    const burrowX = 3, burrowY = Math.floor(HEIGHT / 2);
     dataMap[burrowY][burrowX].component = createBurrow(
         ecs,
         tileToPixel({ x: burrowX, y: burrowY }),
@@ -41,12 +41,16 @@ export default async function getTestMap(assets: GameAssets): Promise<[ECS, Tile
     );
 
     // Arbre à droite
-    const treeX = WIDTH - 3, treeY = Math.floor(HEIGHT / 2);
-    dataMap[treeY][treeX].component = createTree(
-        ecs,
-        tileToPixel({ x: treeX, y: treeY }),
-        assets.appleTree
-    );
+
+    for (let y = Math.floor(HEIGHT / 2) - 1; y <= Math.floor(HEIGHT / 2) + 1; y++) {
+        for (let x = WIDTH - 5; x <= WIDTH - 3; x++) {
+            dataMap[y][x].component = createTree(
+                ecs,
+                tileToPixel({ x, y }),
+                assets.appleTree
+            );
+        }
+    }
 
     return [ecs, dataMap];
 }

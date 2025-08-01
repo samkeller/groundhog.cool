@@ -45,8 +45,7 @@ export function createGroundhog(
     ecs.addComponent(entity, new VisionComponent([]))
     ecs.addComponent(entity, new BarComponent(100, 100, "energy")); // Barre d'énergie
 
-    const burrowPos = ecs.getComponent(spawnBurrow, PositionComponent)!
-    ecs.addComponent(entity, new BurrowHomeComponent(burrowPos));
+    ecs.addComponent(entity, new BurrowHomeComponent(spawnBurrow));
 
     return entity;
 }
