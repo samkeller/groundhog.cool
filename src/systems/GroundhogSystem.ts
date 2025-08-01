@@ -10,12 +10,14 @@ import TreeTagComponent from "../components/tags/TreeTagComponent";
 import PositionComponent from "../components/PositionComponent";
 import FoodStockComponent from "../components/FoodStockComponent";
 import { positionsAreEqual } from "../utils/PathUtils";
+import { BarComponent } from "../components/BarComponent";
 
 export default function GroundhogSystem(ecs: ECS) {
     const groundhogs: Entity[] = ecs.getEntitiesWith(GroundhogTagComponent);
 
     for (const e of groundhogs) {
         const energyComponent = ecs.getComponent(e, EnergyComponent)!;
+        const foodStockComponent = ecs.getComponent(e, FoodStockComponent)!;
         const burrowHomeComponent = ecs.getComponent(e, BurrowHomeComponent)!;
         const canMoveComponent = ecs.getComponent(e, CanMoveComponent)!;
         const positionComponent = ecs.getComponent(e, PositionComponent)!;
@@ -63,5 +65,7 @@ export default function GroundhogSystem(ecs: ECS) {
 
         }
 
+        const barComponent = ecs.getComponent(e, BarComponent)!; // Récupère la seule barre de l'entité
+        barComponent.value = energyComponent.energy; // Met à jour la barre d'énergie
     }
 }

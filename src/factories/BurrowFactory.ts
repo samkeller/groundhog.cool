@@ -6,6 +6,7 @@ import { Sprite, Texture } from "pixi.js";
 import FoodStockComponent from "../components/FoodStockComponent";
 import { PixelPosition } from "../types/Position";
 import { TILE_SIZE } from "../maps/TerrainVariables";
+import { BarComponent } from "../components/BarComponent";
 
 export function createBurrow(ecs: ECS, position: PixelPosition, texture: Texture) {
     console.log(`[createBurrow] - x:${position.x}, y:${position.y}`)
@@ -24,5 +25,6 @@ export function createBurrow(ecs: ECS, position: PixelPosition, texture: Texture
         height: TILE_SIZE * ratio,
     })));
     ecs.addComponent(entity, new FoodStockComponent(10000, 10000))
+    ecs.addComponent(entity, new BarComponent(50, 100, "foodStock"));
     return entity;
 }

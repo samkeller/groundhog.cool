@@ -13,6 +13,7 @@ import { randomFloatFromInterval, randomIntFromInterval } from "../utils/MathUti
 import { TILE_SIZE } from "../maps/TerrainVariables";
 import VisionComponent from "../components/VisionComponent";
 import FoodStockComponent from "../components/FoodStockComponent";
+import { BarComponent } from "../components/BarComponent";
 
 export function createGroundhog(
     ecs: ECS,
@@ -42,6 +43,7 @@ export function createGroundhog(
     ecs.addComponent(entity, new FoodStockComponent(0, 100));
     ecs.addComponent(entity, new OwnedByComponent(playerId))
     ecs.addComponent(entity, new VisionComponent([]))
+    ecs.addComponent(entity, new BarComponent(100, 100, "energy")); // Barre d'énergie
 
     const burrowPos = ecs.getComponent(spawnBurrow, PositionComponent)!
     ecs.addComponent(entity, new BurrowHomeComponent(burrowPos));

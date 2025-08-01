@@ -12,6 +12,7 @@ import { MoveSystem } from "./MoveSystem";
 import { SpawnSystem } from "./SpawnSystem";
 import VisionSystem from "./VisionSystem";
 import DrawSystem from "./DrawSystem";
+import BarRenderSystem from "./BarRenderSystem";
 import { Container } from "pixi.js";
 
 export default function RunSystems(
@@ -39,4 +40,5 @@ function runResolutionSystems(ecs: ECS, dataMap: TileMap, context: TickContext) 
 }
 function runDrawSystems(ecs: ECS, objectContainer: Container) {
     DrawSystem(ecs, objectContainer);
+    BarRenderSystem(ecs, objectContainer)
 }
