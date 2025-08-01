@@ -5,7 +5,7 @@ import EnergyComponent from "../components/EnergyComponent";
 import { TMap } from "../types/TMap";
 import MoveUtils from "../utils/MoveUtils";
 import CanMoveComponent from "../components/CanMoveComponent";
-import TickContext from "../assets/context/TickContext";
+import TickContext from "../components/context/TickContext";
 import MoveToIntentComponent from "../components/intents/MoveToIntentComponent";
 
 export function MoveSystem(ecs: ECS, map: TMap, context: TickContext) {

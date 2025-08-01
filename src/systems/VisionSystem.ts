@@ -1,4 +1,4 @@
-import TickContext from "../assets/context/TickContext";
+import TickContext from "../components/context/TickContext";
 import PositionComponent from "../components/PositionComponent";
 import VisionComponent from "../components/VisionComponent";
 import { ECS, Entity } from "../ECS";

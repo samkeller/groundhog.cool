@@ -15,7 +15,7 @@ import OwnedByComponent from './components/relations/OwnedByComponent';
 import { SpawnSystem } from './systems/SpawnSystem';
 import BurrowSystem from './systems/BurrowSystem';
 import VisionSystem from './systems/VisionSystem';
-import TickContext from './assets/context/TickContext';
+import TickContext from './components/context/TickContext';
 import getTestMap from './maps/TestMap1';
 import PathSystem from './systems/PathSystem';
 

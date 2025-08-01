@@ -1,4 +1,4 @@
-import TickContext from "../assets/context/TickContext";
+import TickContext from "../components/context/TickContext";
 import SpawnIntentComponent from "../components/intents/SpawnIntentComponent";
 import VisionComponent from "../components/VisionComponent";
 import { ECS, Entity } from "../ECS";
@@ -6,10 +6,10 @@ import { createGroundhog } from "../factories/GroundhogFactory";
 
 export function SpawnSystem(ecs: ECS, context: TickContext) {
     const spawnIntentsIds = ecs.getEntitiesWith(SpawnIntentComponent)
-    for (const intentId of spawnIntentsIds) {
+    for (const e of spawnIntentsIds) {
         let created: Entity | null = null;
 
-        const spawnIntent = ecs.getComponent(intentId, SpawnIntentComponent)
+        const spawnIntent = ecs.getComponent(e, SpawnIntentComponent)
         if (!spawnIntent) return;
         if (spawnIntent.entity === "groundhog") {
             created = createGroundhog(
@@ -22,7 +22,7 @@ export function SpawnSystem(ecs: ECS, context: TickContext) {
 
             // Ajout dans le contexte
             context.registerInSpatialIndex(created, spawnIntent.at)
-            ecs.removeComponent(spawnIntent.fromBurrow, SpawnIntentComponent)
+            ecs.removeComponent(e, SpawnIntentComponent)
         }
     }
 

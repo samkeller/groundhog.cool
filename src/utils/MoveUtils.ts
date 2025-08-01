@@ -1,5 +1,5 @@
 import { MOUNTAIN_HEIGHT, TILE_SIZE, WATER_HEIGHT } from "../maps/TerrainVariables";
-import { TMap } from "../types/TMap";
+import { TMap, TTile } from "../types/TMap";
 import TPosition from "../types/TPosition";
 
 export default class MoveUtils {
@@ -9,7 +9,7 @@ export default class MoveUtils {
      * @param tile 
      * @returns 
      */
-    private isWalkable(tile: any): boolean {
+    private isWalkable(tile: TTile): boolean {
         return tile.height > WATER_HEIGHT && tile.height < MOUNTAIN_HEIGHT;
     }
 
