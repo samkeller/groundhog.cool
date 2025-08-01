@@ -67,5 +67,28 @@ export default function GroundhogSystem(ecs: ECS) {
 
         const barComponent = ecs.getComponent(e, BarComponent)!; // Récupère la seule barre de l'entité
         barComponent.value = energyComponent.energy; // Met à jour la barre d'énergie
+
+        // Si l'énergie n'est pas au maximum et qu'il y a de la nourriture
+        const FOOD_ENERGY_MULTIPLIER = 5;
+        const missingEnergy = energyComponent.maxEnergy - energyComponent.energy;
+        if (
+            energyComponent.energy < energyComponent.maxEnergy &&
+            foodStockComponent.amount > 0 &&
+            foodStockComponent.amount * FOOD_ENERGY_MULTIPLIER > missingEnergy
+        ) {
+            // Calculer la quantité de nourriture nécessaire pour restaurer l'énergie manquante
+            const foodNeeded = Math.min(
+                foodStockComponent.amount,
+                Math.ceil(missingEnergy / FOOD_ENERGY_MULTIPLIER)
+            );
+            const energyToRestore = foodNeeded * FOOD_ENERGY_MULTIPLIER;
+
+            // Consommer la nourriture et restaurer l'énergie
+            foodStockComponent.amount -= foodNeeded;
+            energyComponent.energy += energyToRestore;
+            if (energyComponent.energy > energyComponent.maxEnergy) {
+                energyComponent.energy = energyComponent.maxEnergy;
+            }
+        }
     }
 }
