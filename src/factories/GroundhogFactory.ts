@@ -12,6 +12,7 @@ import CanMoveComponent from "../components/CanMoveComponent";
 import { randomFloatFromInterval, randomIntFromInterval } from "../utils/MathUtils";
 import { TILE_SIZE } from "../maps/TerrainVariables";
 import VisionComponent from "../components/VisionComponent";
+import FoodStockComponent from "../components/FoodStockComponent";
 
 export function createGroundhog(
     ecs: ECS,
@@ -38,11 +39,12 @@ export function createGroundhog(
         randomFloatFromInterval(0.2, 0.8)
     ));
     ecs.addComponent(entity, new MoveIntentComponent());
+    ecs.addComponent(entity, new FoodStockComponent(0, 100));
     ecs.addComponent(entity, new OwnedByComponent(playerId))
     ecs.addComponent(entity, new VisionComponent([]))
 
-    const burrowPos = ecs.getComponent(spawnBurrow, PositionComponent)
-    if (!burrowPos) throw new Error("Burrow has no position!");
+    const burrowPos = ecs.getComponent(spawnBurrow, PositionComponent)!
     ecs.addComponent(entity, new BurrowHomeComponent(burrowPos));
+
     return entity;
 }
