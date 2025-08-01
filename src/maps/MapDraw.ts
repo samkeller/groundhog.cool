@@ -1,15 +1,15 @@
-import { Assets, Spritesheet } from "pixi.js";
+import { Spritesheet } from "pixi.js";
 import spritesJSON from "../assets/images/sprites.json"
-import { TMap } from "../types/TMap";
+import { TileMap } from "../types/TileMap";
 import { CompositeTilemap } from "@pixi/tilemap";
 import { MOUNTAIN_HEIGHT, TILE_SIZE, WATER_HEIGHT } from "./TerrainVariables";
+import { GameAssets } from "../utils/AssetLoader";
 
-export default (async (map: TMap) => {
+export default (async (map: TileMap, assets: GameAssets) => {
     const tilemap = new CompositeTilemap();
 
-    const sheetImage = await Assets.load("assets/images/sprites.png");
     const spritesheet = new Spritesheet(
-        sheetImage,
+        assets.sprites,
         spritesJSON
     );
     await spritesheet.parse();

@@ -1,6 +1,7 @@
 import { MOUNTAIN_HEIGHT, TILE_SIZE, WATER_HEIGHT } from "../maps/TerrainVariables";
-import { TMap, TTile } from "../types/TMap";
-import TPosition from "../types/TPosition";
+import { TileMap, Tile } from "../types/TileMap";
+import { PixelPosition } from "../types/Position";
+import { pixelToTile } from "./PositionUtils";
 
 export default class MoveUtils {
 
@@ -9,7 +10,7 @@ export default class MoveUtils {
      * @param tile 
      * @returns 
      */
-    private isWalkable(tile: TTile): boolean {
+    private isWalkable(tile: Tile): boolean {
         return tile.height > WATER_HEIGHT && tile.height < MOUNTAIN_HEIGHT;
     }
 
@@ -18,9 +19,9 @@ export default class MoveUtils {
      * @param rotation degré
      * @returns degré de la prochaine direction
      */
-    findValidDirection(map: TMap, position: TPosition, speed: number, rotation: number): {
+    findValidDirection(map: TileMap, position: PixelPosition, speed: number, rotation: number): {
         nextDirection: number,
-        nextPosition: TPosition
+        nextPosition: PixelPosition
     } | undefined {
         let MAX_LOOPS = 10
         let loops = 0;
@@ -30,12 +31,11 @@ export default class MoveUtils {
         while (loops < MAX_LOOPS) {
             const testNext = this.getNextPosition(position, nextDirection, speed);
 
-            const tileX = Math.floor(testNext.x / TILE_SIZE);
-            const tileY = Math.floor(testNext.y / TILE_SIZE);
+            const tile = pixelToTile(testNext) 
 
-            if (tileY >= 0 && tileY < map.length && tileX >= 0 && tileX < map[0].length) {
-                const tile = map[tileY][tileX];
-                if (this.isWalkable(tile)) {
+            if (tile.y >= 0 && tile.y < map.length && tile.x >= 0 && tile.x < map[0].length) {
+                const tileData = map[tile.y][tile.x];
+                if (this.isWalkable(tileData)) {
                     return {
                         nextDirection: nextDirection,
                         nextPosition: testNext
@@ -58,7 +58,7 @@ export default class MoveUtils {
      * @param speed Distance à parcourir
      * @returns Nouvelle position (TPosition)
      */
-    getNextPosition(fromPosition: TPosition, rotation: number, speed: number): TPosition {
+    getNextPosition(fromPosition: PixelPosition, rotation: number, speed: number): PixelPosition {
         // Décalage de -90° pour que 0° = haut
         const rad = (rotation - 90) * Math.PI / 180;
         return {

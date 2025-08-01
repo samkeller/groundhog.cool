@@ -1,30 +1,28 @@
-import { Texture } from "pixi.js";
-import { TMap } from "../../types/TMap";
+import { TileMap } from "../../types/TileMap";
 import { Entity } from "../../ECS";
-import TPosition from "../../types/TPosition";
-import { TILE_SIZE } from "../../maps/TerrainVariables";
+import { PixelPosition } from "../../types/Position";
+import { GameAssets } from "../../utils/AssetLoader";
+import { tileToPixel } from "../../utils/PositionUtils";
 
 export default class TickContext {
-    map: TMap
-    assets: {
-        groundhog: Texture
-    }
+    map: TileMap
+    assets: GameAssets
     spatialIndex: Map<string, Set<Entity>>
 
-    constructor(map: TMap, groundhog: Texture) {
+    constructor(map: TileMap, assets: GameAssets) {
         this.map = map;
-        this.assets = { groundhog };
+        this.assets = assets;
         this.spatialIndex = this.BuildSpatialIndex(map)
     }
 
-    spatialIndexKeyBuilder(position: TPosition) {
+    spatialIndexKeyBuilder(position: PixelPosition) {
         return `${Math.floor(position.x)}:${Math.floor(position.y)}`
     }
 
     updateSpatialIndex(
         entityId: number,
-        oldPos: TPosition,
-        newPos: TPosition
+        oldPos: PixelPosition,
+        newPos: PixelPosition
     ) {
         const oldKey = this.spatialIndexKeyBuilder(oldPos);
         const newKey = this.spatialIndexKeyBuilder(newPos);
@@ -41,7 +39,7 @@ export default class TickContext {
 
     registerInSpatialIndex(
         entityId: number,
-        position: TPosition
+        position: PixelPosition
     ) {
         const key = this.spatialIndexKeyBuilder(position)
         if (!this.spatialIndex.has(key)) {
@@ -55,17 +53,13 @@ export default class TickContext {
      * @param dataMap 
      * @returns 
      */
-    private BuildSpatialIndex(dataMap: TMap): TickContext["spatialIndex"] {
+    private BuildSpatialIndex(dataMap: TileMap): TickContext["spatialIndex"] {
         const spatialIndex: Map<string, Set<Entity>> = new Map();
         for (let y = 0; y < dataMap.length; y++) { // Columns
             for (let x = 0; x < dataMap[y].length; x++) { // Rows
                 const cell = dataMap[y][x]
                 if (cell.component) {
-
-                    const key = this.spatialIndexKeyBuilder({
-                        x: x * TILE_SIZE,
-                        y: y * TILE_SIZE
-                    });
+                    const key = this.spatialIndexKeyBuilder(tileToPixel({x, y}));
                     spatialIndex.set(key, new Set());
                     spatialIndex.get(key)!.add(cell.component);
                 }

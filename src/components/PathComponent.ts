@@ -1,8 +1,8 @@
 import { Component } from "../ECS";
-import TPosition from "../types/TPosition";
+import { PixelPosition } from "../types/Position";
 
 export default class PathComponent implements Component {
     constructor(
-        public path: TPosition[]
+        public path: PixelPosition[]
     ) {}
 }

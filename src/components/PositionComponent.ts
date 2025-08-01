@@ -1,12 +1,12 @@
 import { Component } from "../ECS";
-import TPosition from "../types/TPosition";
+import { PixelPosition } from "../types/Position";
 
-export default class PositionComponent implements Component, TPosition {
+export default class PositionComponent implements Component, PixelPosition {
     x: number;
     y: number;
 
     // Implémentation unique du constructor
-    constructor(position: TPosition) {
+    constructor(position: PixelPosition) {
         this.x = position.x;
         this.y = position.y;
     }

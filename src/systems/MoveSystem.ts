@@ -2,13 +2,13 @@ import { ECS } from "../ECS";
 import PositionComponent from "../components/PositionComponent";
 import MoveIntentComponent from "../components/intents/MoveIntentComponent";
 import EnergyComponent from "../components/EnergyComponent";
-import { TMap } from "../types/TMap";
+import { TileMap } from "../types/TileMap";
 import MoveUtils from "../utils/MoveUtils";
 import CanMoveComponent from "../components/CanMoveComponent";
 import TickContext from "../components/context/TickContext";
 import MoveToIntentComponent from "../components/intents/MoveToIntentComponent";
 
-export function MoveSystem(ecs: ECS, map: TMap, context: TickContext) {
+export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
   const entities = ecs.getEntitiesWith(MoveIntentComponent, PositionComponent, CanMoveComponent);
 
   for (const e of entities) {

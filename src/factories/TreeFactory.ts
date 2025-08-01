@@ -6,9 +6,9 @@ import FoodStockComponent from "../components/FoodStockComponent";
 import { Sprite, Texture } from "pixi.js";
 import { TILE_SIZE } from "../maps/TerrainVariables";
 import { randomFloatFromInterval } from "../utils/MathUtils";
-import TPosition from "../types/TPosition";
+import { PixelPosition } from "../types/Position";
 
-export function createTree(ecs: ECS, position: TPosition, texture: Texture) {
+export function createTree(ecs: ECS, position: PixelPosition, texture: Texture) {
 
     const entity = ecs.createEntity();
 

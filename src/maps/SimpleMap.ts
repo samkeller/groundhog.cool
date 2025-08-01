@@ -1,13 +1,14 @@
-import perlin from "perlin-noise"
-import { TMap, TTile } from "../types/TMap";
-import { Assets } from "pixi.js";
+import perlin from "perlin-noise";
+import { TileMap, Tile } from "../types/TileMap";
+import { GameAssets } from "../utils/AssetLoader";
 import { MOUNTAIN_HEIGHT, TILE_SIZE, WATER_HEIGHT } from "./TerrainVariables";
 import { ECS } from "../ECS";
 import { createBurrow } from "../factories/BurrowFactory";
 import { createTree } from "../factories/TreeFactory";
+import { tileToPixel } from "../utils/PositionUtils";
 
-export default (async (): Promise<[ECS, TMap]> => {
-    const dataMap: TMap = []
+export default (async (assets: GameAssets): Promise<[ECS, TileMap]> => {
+    const dataMap: TileMap = []
     const ecs = new ECS()
     const WIDTH = 1920
     const HEIGHT = 1088
@@ -22,7 +23,7 @@ export default (async (): Promise<[ECS, TMap]> => {
         dataMap.push([])
         for (let x = 0; x < gridWidth; x++) {
             const height = per[y * gridWidth + x]
-            const cellData: TTile = {
+            const cellData: Tile = {
                 height: height,
                 walkable: height > WATER_HEIGHT && height < MOUNTAIN_HEIGHT,
                 position: { x, y },
@@ -32,16 +33,19 @@ export default (async (): Promise<[ECS, TMap]> => {
         }
     }
 
-    const dataMapWithObjects = await addObjects(new ECS(), gridHeight, gridWidth, [...dataMap]);
+    const dataMapWithObjects = await addObjects(new ECS(), gridHeight, gridWidth, [...dataMap], assets);
 
     console.log(`[SimpleMap.ts] DataMap created, size=[width:${gridWidth}, height:${gridHeight}]`)
     return [ecs, dataMapWithObjects]
 })
 
-async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataMap: TMap): Promise<TMap> {
-    const appleTreeTexture = await Assets.load("assets/images/apple_tree.png");
-    const burrowTexture = await Assets.load("assets/images/burrow.png");
-
+async function addObjects(
+    ecs: ECS,
+    gridHeight: number,
+    gridWidth: number,
+    dataMap: TileMap,
+    assets: GameAssets
+): Promise<TileMap> {
     let burrowPlaced = false
 
     const [minCenterY, maxCenterY, minCenterX, maxCenterX] = [
@@ -67,11 +71,8 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
                     Math.random() < 0.10 &&
                     !burrowPlaced) {
                     tile.component = createBurrow(ecs,
-                        {
-                            x: x * TILE_SIZE + TILE_SIZE / 2,
-                            y: y * TILE_SIZE + TILE_SIZE / 2
-                        },
-                        burrowTexture
+                        tileToPixel({x,y}),
+                        assets.burrow
                     )
                     burrowPlaced = true;
                     break;
@@ -88,11 +89,8 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
                     Math.random() > 0.99
                 ) {
                     tile.component = createTree(ecs,
-                        {
-                            x: tile.position.x * TILE_SIZE + TILE_SIZE / 2,
-                            y: tile.position.y * TILE_SIZE + TILE_SIZE / 2
-                        },
-                        appleTreeTexture)
+                        tileToPixel({x,y}),
+                        assets.appleTree)
                 }
             }
         }
@@ -101,7 +99,7 @@ async function addObjects(ecs: ECS, gridHeight: number, gridWidth: number, dataM
     // pas réussi à ajouter le départ: restart
 
     if (!burrowPlaced) {
-        dataMap = await addObjects(ecs, gridHeight, gridWidth, dataMap)
+        dataMap = await addObjects(ecs, gridHeight, gridWidth, dataMap, assets)
     }
 
     return dataMap;

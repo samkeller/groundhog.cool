@@ -5,8 +5,8 @@ import GroundhogTagComponent from "../components/tags/GroundhogTagComponent";
 import EnergyComponent from "../components/EnergyComponent";
 import { Sprite, Texture } from "pixi.js";
 import MoveIntentComponent from "../components/intents/MoveIntentComponent";
-import BurrowHomeComponent from "../components/BurrowHomeComponent";
-import TPosition from "../types/TPosition";
+import BurrowHomeComponent from "../components/relations/BurrowHomeComponent";
+import { PixelPosition } from "../types/Position";
 import OwnedByComponent from "../components/relations/OwnedByComponent";
 import CanMoveComponent from "../components/CanMoveComponent";
 import { randomFloatFromInterval, randomIntFromInterval } from "../utils/MathUtils";
@@ -15,7 +15,7 @@ import VisionComponent from "../components/VisionComponent";
 
 export function createGroundhog(
     ecs: ECS,
-    position: TPosition,
+    position: PixelPosition,
     texture: Texture,
     spawnBurrow: Entity,
     playerId: Entity

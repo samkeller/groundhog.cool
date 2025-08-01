@@ -2,7 +2,7 @@ import { ECS, Entity } from "../ECS";
 import GroundhogTagComponent from "../components/tags/GroundhogTagComponent";
 import EnergyComponent from "../components/EnergyComponent";
 import MoveIntentComponent from "../components/intents/MoveIntentComponent";
-import BurrowHomeComponent from "../components/BurrowHomeComponent";
+import BurrowHomeComponent from "../components/relations/BurrowHomeComponent";
 import MoveToIntentComponent from "../components/intents/MoveToIntentComponent";
 import CanMoveComponent from "../components/CanMoveComponent";
 import VisionComponent from "../components/VisionComponent";

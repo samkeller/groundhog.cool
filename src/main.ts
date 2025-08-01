@@ -1,23 +1,14 @@
-import { Application, Assets, Container } from 'pixi.js';
-import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions"
-import getDataMap from './maps/SimpleMap';
+import { Application, Container } from 'pixi.js';
+import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions";
 import MapDraw from './maps/MapDraw';
-import { ECS } from "./ECS";
-import DrawSystem from "./systems/DrawSystem";
-import TreeSystem from "./systems/TreeSystem";
-import GroundhogSystem from "./systems/GroundhogSystem";
-import { MoveSystem } from './systems/MoveSystem';
-import { MoveToSystem } from './systems/MoveToSystem';
 import BurrowTagComponent from './components/tags/BurrowTagComponent';
 import PositionComponent from './components/PositionComponent';
 import { createPlayer } from './factories/PlayerFactory';
 import OwnedByComponent from './components/relations/OwnedByComponent';
-import { SpawnSystem } from './systems/SpawnSystem';
-import BurrowSystem from './systems/BurrowSystem';
-import VisionSystem from './systems/VisionSystem';
 import TickContext from './components/context/TickContext';
 import getTestMap from './maps/TestMap1';
-import PathSystem from './systems/PathSystem';
+import { loadAssets } from './utils/AssetLoader';
+import RunSystems from './systems/Systems';
 
 (async () => {
     // Déjà initialisé, on ne fait rien
@@ -36,10 +27,13 @@ import PathSystem from './systems/PathSystem';
 
     app.stage.addChild(gameContainer);
 
-    // Map
-    // const [ecs, dataMap] = await getDataMap() // DataMap = tiles !
-    const [ecs, dataMap] = await getTestMap() // DataMap = tiles !
-    const drawnMap = await MapDraw(dataMap)
+    // Chargement des assets
+    const assets = await loadAssets();
+
+    // Chargement de la map et dessin
+    // const [ecs, dataMap] = await getDataMap(assets) // DataMap = tiles !
+    const [ecs, dataMap] = await getTestMap(assets) // DataMap = tiles !
+    const drawnMap = await MapDraw(dataMap, assets)
 
     const objectContainer = new Container()
     gameContainer.addChild(drawnMap)
@@ -52,7 +46,6 @@ import PathSystem from './systems/PathSystem';
     const burrows = ecs.getEntitiesWith(BurrowTagComponent, PositionComponent);
     const burrow = burrows[0]; // Il n’y en a qu’un normalement
     const burrowPos = ecs.getComponent(burrow, PositionComponent)!;
-    // ects.find(elem => elem.name === "burrow");
     if (!burrow || !burrowPos) {
         throw new Error("Pas de terrier :(");
     }
@@ -65,33 +58,15 @@ import PathSystem from './systems/PathSystem';
     gameContainer.x = centerX - burrowPos.x;
     gameContainer.y = centerY - burrowPos.y;
 
-    const groundHogAsset = await Assets.load("assets/images/groundhog.png")
-    const context = new TickContext(dataMap, groundHogAsset)
+    const context = new TickContext(dataMap, assets);
 
-    // Boucle principale ECS
     app.ticker.speed = 0.5
+  
     app.ticker.add(() => {
-
-        // Intent
-        TreeSystem(ecs);
-        GroundhogSystem(ecs);
-        BurrowSystem(ecs);
-
-        // Resolution
-        MoveToSystem(ecs, dataMap)
-        PathSystem(ecs)
-        MoveSystem(ecs, dataMap, context)
-        SpawnSystem(ecs, context)
-        VisionSystem(ecs, context)
-
-        // Draw
-        DrawSystem(ecs, objectContainer);
-
-        // TODO: Adapter DrawOverlxay pour ECS (ex: passer l'entité player)
-        // DrawOverlay(app, playerEntity)
+        RunSystems(ecs, dataMap, context, objectContainer)
     });
 
-    // Passe le container à la fonction de zoom avec la molette
+    // Input event listeners
     app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, gameContainer));
     app.canvas.addEventListener("mousedown", (evt) => onMouseDownFn(evt));
     app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, gameContainer));

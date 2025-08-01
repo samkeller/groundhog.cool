@@ -4,10 +4,10 @@ import DrawableComponent from "../components/DrawableComponent";
 import BurrowTagComponent from "../components/tags/BurrowTagComponent";
 import { Sprite, Texture } from "pixi.js";
 import FoodStockComponent from "../components/FoodStockComponent";
-import TPosition from "../types/TPosition";
+import { PixelPosition } from "../types/Position";
 import { TILE_SIZE } from "../maps/TerrainVariables";
 
-export function createBurrow(ecs: ECS, position: TPosition, texture: Texture) {
+export function createBurrow(ecs: ECS, position: PixelPosition, texture: Texture) {
     console.log(`[createBurrow] - x:${position.x}, y:${position.y}`)
 
     const ratio = texture.height / texture.width;

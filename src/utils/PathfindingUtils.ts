@@ -1,18 +1,18 @@
-import { AStarFinder, DiagonalMovement, Grid, Heuristic, JumpPointFinder } from "pathfinding";
-import { TMap } from "../types/TMap";
-import TPosition from "../types/TPosition";
-import { TILE_SIZE } from "../maps/TerrainVariables";
+import { AStarFinder, DiagonalMovement, Grid, Heuristic } from "pathfinding";
+import { TileMap } from "../types/TileMap";
+import { PixelPosition, TilePosition } from "../types/Position";
+import { pixelToTile, tileToPixel } from "./PositionUtils";
 
 export default class PathfindingUtils {
 
     private PFMap: number[][] = []
-    constructor(map: TMap) {
+    constructor(map: TileMap) {
         this.PFMap = map.map(c => {
             return c.map(l => l.walkable ? 0 : 1)
         })
     }
 
-    private getPathFinding(from: TPosition, to: TPosition): number[][] {
+    private getPathFinding(from: TilePosition, to: TilePosition): number[][] {
         const finder = new AStarFinder({
             heuristic: Heuristic.manhattan,
             diagonalMovement: DiagonalMovement.Always,
@@ -42,21 +42,11 @@ export default class PathfindingUtils {
      * @param to 
      * @returns 
      */
-    getTilesPathFinding(from: TPosition, to: TPosition): TPosition[] {
-        return this.getPathFinding(
-            {
-                x: Math.floor(from.x / TILE_SIZE),
-                y: Math.floor(from.y / TILE_SIZE),
-            },
-            {
-                x: Math.floor(to.x / TILE_SIZE),
-                y: Math.floor(to.y / TILE_SIZE),
-            }
-        ).map(step => {
-            return {
-                x: step[0] * TILE_SIZE + TILE_SIZE / 2,
-                y: step[1] * TILE_SIZE + TILE_SIZE / 2
-            }
-        })
+    getTilesPathFinding(from: PixelPosition, to: PixelPosition): PixelPosition[] {
+        const start = pixelToTile(from);
+        const end = pixelToTile(to);
+         // Exécution du pathfinding
+        return this.getPathFinding(start, end)
+            .map(([x, y]) => tileToPixel({ x, y }));
     }
 }
