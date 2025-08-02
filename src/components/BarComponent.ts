@@ -1,3 +1,4 @@
+import { Color } from "pixi.js";
 import { Component } from "../ECS";
 
 export class BarComponent implements Component {
@@ -9,15 +10,20 @@ export class BarComponent implements Component {
         this.color = this.getColorByType(type);
     }
 
-    public color: string;
+    public color: Color;
 
-    private getColorByType(type: "energy" | "foodStock"): string {
+    private colors = {
+        yellow: new Color("#ffd449"),
+        green: new Color("#548c2f")
+    }
+    
+    private getColorByType(type: "energy" | "foodStock"): Color {
         switch (type) {
             case "energy":
-                return "#00FF00"; // Vert pour l'énergie
+                return this.colors.yellow; // Jaune pour l'énergie'
             case "foodStock":
             default:
-                return "#FFA500"; // Orange pour la nourriture
+                return this.colors.green; // Vert pour la nourriture
         }
     }
 

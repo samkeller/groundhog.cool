@@ -23,7 +23,7 @@ export default function RunSystems(
 ) {
     runIntentSystems(ecs);
     runResolutionSystems(ecs, dataMap, context);
-    runDrawSystems(ecs, objectContainer);
+    runDrawSystems(ecs, objectContainer, context);
 }
 
 function runIntentSystems(ecs: ECS) {
@@ -38,7 +38,7 @@ function runResolutionSystems(ecs: ECS, dataMap: TileMap, context: TickContext) 
     SpawnSystem(ecs, context);
     VisionSystem(ecs, context);
 }
-function runDrawSystems(ecs: ECS, objectContainer: Container) {
+function runDrawSystems(ecs: ECS, objectContainer: Container, context: TickContext) {
     DrawSystem(ecs, objectContainer);
-    BarRenderSystem(ecs, objectContainer)
+    BarRenderSystem(ecs, objectContainer, context)
 }
