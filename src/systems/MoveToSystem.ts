@@ -5,7 +5,6 @@ import { TileMap } from "../types/TileMap";
 import CanMoveComponent from "../components/CanMoveComponent";
 import PathfindingUtils from "../utils/PathfindingUtils";
 import PathComponent from "../components/PathComponent";
-import { positionsAreEqual } from "../utils/PathUtils";
 
 export default function MoveToSystem(ecs: ECS, map: TileMap) {
     // Instanciation unique de PathfindingUtils pour ce tick
@@ -14,15 +13,10 @@ export default function MoveToSystem(ecs: ECS, map: TileMap) {
 
     for (const e of entities) {
         const pos = ecs.getComponent(e, PositionComponent)!;
-        const moveTo = ecs.getComponent(e, MoveToIntentComponent)!;
+        const moveToEntity = ecs.getComponent(e, MoveToIntentComponent)!;
+        const moveToPosition = ecs.getComponent(moveToEntity.target, PositionComponent)!;
         let pathComponent = ecs.getComponent(e, PathComponent);
 
-        // On est arrivés
-        if (positionsAreEqual(pos, moveTo.target)) {
-            ecs.removeComponent(e, MoveToIntentComponent);
-            continue;
-        }
-        
         // Cas où le chemin doit être recalculé :
         // - Pas de PathComponent
         // - Chemin vide
@@ -31,13 +25,12 @@ export default function MoveToSystem(ecs: ECS, map: TileMap) {
             !pathComponent ||
             !pathComponent.path.length ||
              (
-                moveTo.target.x !== pathComponent.path[pathComponent.path.length - 1].x ||
-                moveTo.target.y !== pathComponent.path[pathComponent.path.length - 1].y
+                moveToPosition.x !== pathComponent.path[pathComponent.path.length - 1].x ||
+                moveToPosition.y !== pathComponent.path[pathComponent.path.length - 1].y
             );
         if (shouldRecalculatePath) {
-            const pathSteps = pathfinder.getTilesPathFinding(pos, moveTo.target);
+            const pathSteps = pathfinder.getTilesPathFinding(pos, moveToPosition);
             if (!pathSteps || pathSteps.length === 0) {
-                ecs.removeComponent(e, MoveToIntentComponent);
                 ecs.removeComponent(e, PathComponent);
                 continue;
             }

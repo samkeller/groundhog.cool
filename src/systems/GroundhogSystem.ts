@@ -12,10 +12,12 @@ import FoodStockComponent from "../components/FoodStockComponent";
 import { positionsAreEqual } from "../utils/PathUtils";
 import { BarComponent } from "../components/BarComponent";
 
+const FOOD_ENERGY_MULTIPLIER = 5;
+
 export default function GroundhogSystem(ecs: ECS) {
     const groundhogs: Entity[] = ecs.getEntitiesWith(GroundhogTagComponent);
 
-    lookup: for (const e of groundhogs) {
+    for (const e of groundhogs) {
         const energyComponent = ecs.getComponent(e, EnergyComponent)!;
         const foodStockComponent = ecs.getComponent(e, FoodStockComponent)!;
         const burrowHomeEntity = ecs.getComponent(e, BurrowHomeComponent)?.burrow!;
@@ -24,114 +26,134 @@ export default function GroundhogSystem(ecs: ECS) {
         const positionComponent = ecs.getComponent(e, PositionComponent)!;
         const moveToIntentComponent = ecs.getComponent(e, MoveToIntentComponent);
 
-        const speed = energyComponent.energy / 100;
-        const wantToStockFood = foodStockComponent.amount >= foodStockComponent.amountMax * 0.50
+        // X. Si l'énergie n'est pas au maximum et qu'il y a de la nourriture
+        handleEating(e, energyComponent, foodStockComponent);
+
+        updateEnergyBar(e, energyComponent)
+
+        /**
+        * Quantité de nourriture à toujours garder sur soi (jamais trop prudent).
+        */
+        const foodAmountToKeep = foodStockComponent.amountMax * 0.20
+
+        /**
+        * A trop de nourriture sur lui.
+        */
+        const wantToStockFood = foodStockComponent.amount >= foodAmountToKeep;
+
         if (foodStockComponent.amount > 0) {
-            console.log(foodStockComponent.amount + " de stock de bouffe", wantToStockFood)
+            logger(e, `Actuellement en possession de ${foodStockComponent.amount} nourriture, je ne veux qu'en garder ${foodAmountToKeep}, mon wantToStockFood est donc à ${wantToStockFood}`)
         }
+        // 1. Retourner au terrier
+        // 1.1 - Plus d'énergie
+        // 1.2 - Trop de nourriture dans le stock
         if (
             !positionsAreEqual(positionComponent, burrowHomePosition) &&
-            (
-                !moveToIntentComponent ||
-                moveToIntentComponent?.target !== burrowHomePosition
-            ) &&
             (
                 energyComponent.energy < 10 || // 1. Plus d'énergie
                 wantToStockFood // 2. Inventaire plein
             )
-        ) { // Fatigue -> Rentre à la base
-            logger(e, `Je veux retourner à la maison pour 
-                ${wantToStockFood ? "stocker de la nourriture " : ""}
-                ${energyComponent.energy < 10 ? "me reposer " : ""}
-                !`)
-            // Si déjà une activité en cours -> arrête
-            ecs.removeComponent(e, MoveToIntentComponent)
-            ecs.addComponent(e, new MoveToIntentComponent(burrowHomePosition))
-            continue;
-        }
-
-        if (
-            positionsAreEqual(positionComponent, burrowHomePosition) &&
-            wantToStockFood
         ) {
-            // Déposer la nourriture dans le terrier
-            logger(e, `Je suis au terrier, je vide !`)
-
-            const burrowFoodStock = ecs.getComponent(burrowHomeEntity, FoodStockComponent)!;
-            burrowFoodStock.amount += foodStockComponent.amount;
-            foodStockComponent.amount = 0;
+            logger(e, `Je veux retourner à la maison !`)
+            goToTarget(e, burrowHomeEntity);
             continue;
         }
 
-        if (!moveToIntentComponent) { // Cherche un arbre
+        if (moveToIntentComponent) {
+            const moveToIntentPosition = ecs.getComponent(moveToIntentComponent.target, PositionComponent)!;
+
+            /**
+             * X. On voulait arrive quelque part, on y est !
+            */
+            if (moveToIntentComponent && positionsAreEqual(positionComponent, moveToIntentPosition)) {
+
+                if (positionsAreEqual(burrowHomePosition, moveToIntentPosition)) {
+                    const burrowHomeFoodStock = ecs.getComponent(burrowHomeEntity, FoodStockComponent)!;
+
+                    if (wantToStockFood) {
+                        // position-terrier1. Je stocke le terrier
+
+                        const foodToGive = Math.min(
+                            foodStockComponent.amount,
+                            burrowHomeFoodStock.amountMax - burrowHomeFoodStock.amount
+                        )
+
+                        logger(e, `Je restock le terrier de ${foodToGive}!`)
+                        giveFoodToStock(foodStockComponent, burrowHomeFoodStock, foodToGive);
+                        ecs.removeComponent(e, MoveToIntentComponent)
+                        continue;
+                    } else {
+                        // position-terrier2. Je prends de la nourriture
+                        const foodToTake = Math.min(
+                            burrowHomeFoodStock.amount,
+                            foodStockComponent.amountMax - foodStockComponent.amount
+                        )
+                        logger(e, `Je mange au terrier ${foodToTake}!`)
+                        giveFoodToStock(burrowHomeFoodStock, foodStockComponent, foodToTake);
+                        ecs.removeComponent(e, MoveToIntentComponent)
+                        continue;
+                    }
+                }
+
+                const treeTagComponent = ecs.getComponent(moveToIntentComponent.target, TreeTagComponent)
+
+                if (treeTagComponent) {
+
+                    const treeFoodStockComponent = ecs.getComponent(moveToIntentComponent.target, FoodStockComponent)!
+                    const foodToTake = Math.min(
+                        treeFoodStockComponent.amount,
+                        foodStockComponent.amountMax - foodStockComponent.amount
+                    )
+
+                    logger(e, `Je colecte l'arbre de ${foodToTake}!`)
+
+                    // position-terrier3. Je cueille un arbre
+                    giveFoodToStock(treeFoodStockComponent, foodStockComponent, foodToTake);
+                    continue;
+                }
+                throw new Error("vers quoi on va en fait ??")
+
+            }
+            // Pas encore arrivé.
+        } else {
+            // X. Cherche un arbre
             const visionComponent = ecs.getComponent(e, VisionComponent)!;
             for (const targetId of visionComponent.visibles) {
                 const isTreeComponent = ecs.getComponent(targetId, TreeTagComponent);
+                // Je vois un arbre !
                 if (isTreeComponent) {
                     const treePositionComponent = ecs.getComponent(targetId, PositionComponent)!;
 
-                    const isAlreadyOnOtherTree = visionComponent.visibles.some(v => {
-                        const isTreeComponent = ecs.getComponent(v, TreeTagComponent);
-                        if (!isTreeComponent) return false;
-                        const tempTreePositionComponent = ecs.getComponent(v, PositionComponent)!;
-
-                        return positionsAreEqual(positionComponent, tempTreePositionComponent)
-                    })
-
-                    const treeFoodStock = ecs.getComponent(targetId, FoodStockComponent)!
                     if (
-                        !positionsAreEqual(positionComponent, treePositionComponent) &&
-                        !isAlreadyOnOtherTree
+                        !positionsAreEqual(positionComponent, treePositionComponent)
                     ) {
 
                         logger(e, `J'ai trouvé un arbre en [x:${treePositionComponent.x}, y${treePositionComponent.y}, j'y go !]`)
-                        ecs.addComponent(e, new MoveToIntentComponent({ ...treePositionComponent }));
-                        continue lookup;
-                    } else if (
-                        positionsAreEqual(positionComponent, treePositionComponent)
-                    ) {
-                        logger(e, `Je suis dans l'arbre, je récolte !`);
-
-                        const foodToCollect = Math.min(
-                            treeFoodStock.amount,
-                            foodStockComponent.amountMax - foodStockComponent.amount
-                        );
-                        treeFoodStock.amount -= foodToCollect;
-                        foodStockComponent.amount += foodToCollect;
-
-                        // Log the updated food stock for debugging
-                        logger(e, `Nourriture récoltée: ${foodToCollect}, Stock actuel: ${foodStockComponent.amount}`);
-                        continue lookup; // Quitte la boucle principale après récolte
+                        ecs.addComponent(e, new MoveToIntentComponent(targetId));
+                        break; // Pas besoin d'autre chose
                     }
-                    // console.log("on devrait pas être la ?",
-                    //     positionsAreEqual(positionComponent, treePositionComponent),
-                    //     treeFoodStock.amount < treeFoodStock.amountMax
-
-                    // )
-                    continue lookup; // Quitte la boucle principale après avoir trouvé un arbre valide
                 }
+            }
+
+            // X. Random déplacements
+            if (Math.random() < 0.5) {
+                doRandomMove(e, energyComponent, canMoveComponent)
+                continue;
             }
         }
 
-        if (Math.random() < 0.5) { // Random déplacements
-            // TODO - MoveUtils.findValidDirection()
-            const newDirection = (canMoveComponent.direction + Math.random() * 20 - 10) % 360;
-            ecs.addComponent(e, new MoveIntentComponent(speed, newDirection))
-            continue;
+    }
 
-        }
-
-        const barComponent = ecs.getComponent(e, BarComponent)!; // Récupère la seule barre de l'entité
-        barComponent.value = energyComponent.energy; // Met à jour la barre d'énergie
-
-        // Si l'énergie n'est pas au maximum et qu'il y a de la nourriture
-        const FOOD_ENERGY_MULTIPLIER = 5;
+    function handleEating(
+        e: Entity,
+        energyComponent: EnergyComponent,
+        foodStockComponent: FoodStockComponent,
+    ) {
         const missingEnergy = energyComponent.maxEnergy - energyComponent.energy;
-        if (
-            energyComponent.energy < energyComponent.maxEnergy / 2 &&
+
+        if (energyComponent.energy < energyComponent.maxEnergy / 2 &&
             foodStockComponent.amount > 0 &&
-            foodStockComponent.amount * FOOD_ENERGY_MULTIPLIER > missingEnergy
-        ) {
+            foodStockComponent.amount * FOOD_ENERGY_MULTIPLIER > missingEnergy) {
 
             // Calculer la quantité de nourriture nécessaire pour restaurer l'énergie manquante
             const foodNeeded = Math.min(
@@ -139,19 +161,50 @@ export default function GroundhogSystem(ecs: ECS) {
                 Math.ceil(missingEnergy / FOOD_ENERGY_MULTIPLIER)
             );
             const energyToRestore = foodNeeded * FOOD_ENERGY_MULTIPLIER;
-            logger(e, `Je mange ${foodNeeded} de nourritures (${energyComponent} d'énergie)`)
+            logger(e, `Je mange ${foodNeeded} de nourritures (${energyComponent} d'énergie)`);
 
             // Consommer la nourriture et restaurer l'énergie
             foodStockComponent.amount -= foodNeeded;
             energyComponent.energy += energyToRestore;
-            if (energyComponent.energy > energyComponent.maxEnergy) {
-                energyComponent.energy = energyComponent.maxEnergy;
-            }
         }
     }
 
-    function handleGroundhogSeeTree() {
+    function giveFoodToStock(
+        fromStock: FoodStockComponent,
+        toStock: FoodStockComponent,
+        amount: number
+    ) {
+        toStock.amount += amount;
+        fromStock.amount -= amount;
+    }
 
+    function goToTarget(
+        e: Entity,
+        targetEntity: Entity
+    ) {
+        // Si déjà une activité en cours -> arrête
+        ecs.removeComponent(e, MoveToIntentComponent)
+        ecs.addComponent(e, new MoveToIntentComponent(targetEntity))
+    }
+
+    function doRandomMove(
+        e: Entity,
+        energyComponent: EnergyComponent,
+        canMoveComponent: CanMoveComponent
+    ) {
+        const speed = energyComponent.energy / 100;
+
+        // TODO - MoveUtils.findValidDirection()
+        const newDirection = (canMoveComponent.direction + Math.random() * 20 - 10) % 360;
+        ecs.addComponent(e, new MoveIntentComponent(speed, newDirection))
+    }
+
+    function updateEnergyBar(
+        e: Entity,
+        energyComponent: EnergyComponent
+    ) {
+        const barComponent = ecs.getComponent(e, BarComponent)!; // Récupère la seule barre de l'entité
+        barComponent.value = energyComponent.energy; // Met à jour la barre d'énergie
     }
     function logger(e: Entity, action: string) {
         console.log(`GroundHogSystem - e:${e} - ${action}`)

@@ -6,7 +6,6 @@ import { TileMap } from "../types/TileMap";
 import MoveUtils from "../utils/MoveUtils";
 import CanMoveComponent from "../components/CanMoveComponent";
 import TickContext from "../components/context/TickContext";
-import MoveToIntentComponent from "../components/intents/MoveToIntentComponent";
 
 export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
   const entities = ecs.getEntitiesWith(MoveIntentComponent, PositionComponent, CanMoveComponent);
@@ -40,16 +39,6 @@ export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
     // Nettoyer l'intention après application
     ecs.removeComponent(e, MoveIntentComponent);
 
-    // Regardes si c'était un moveToIntent
-    const moveToIntentComponent = ecs.getComponent(e, MoveToIntentComponent) as MoveToIntentComponent | undefined;
-
-    if (
-      moveToIntentComponent &&
-      result.nextPosition.x === moveToIntentComponent.target.x &&
-      result.nextPosition.y === moveToIntentComponent.target.y
-    ) {
-      ecs.removeComponent(e, MoveToIntentComponent);
-    }
     // Update contexte
     context.updateSpatialIndex(e, posCopy, result.nextPosition)
   }

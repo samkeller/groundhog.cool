@@ -1,8 +1,7 @@
-import { Component } from "../../ECS";
-import { PixelPosition } from "../../types/Position";
+import { Component, Entity } from "../../ECS";
 
 export default class MoveToIntentComponent implements Component {
   constructor(
-    public target: PixelPosition,
-  ) {}
+    public target: Entity,
+  ) { }
 }
