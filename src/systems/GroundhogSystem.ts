@@ -11,6 +11,7 @@ import PositionComponent from "../components/PositionComponent";
 import FoodStockComponent from "../components/FoodStockComponent";
 import { positionsAreEqual } from "../utils/PathUtils";
 import { BarComponent } from "../components/BarComponent";
+import CooldownComponent from "../components/CooldownComponent";
 
 const FOOD_ENERGY_MULTIPLIER = 5;
 
@@ -25,6 +26,11 @@ export default function GroundhogSystem(ecs: ECS) {
         const canMoveComponent = ecs.getComponent(e, CanMoveComponent)!;
         const positionComponent = ecs.getComponent(e, PositionComponent)!;
         const moveToIntentComponent = ecs.getComponent(e, MoveToIntentComponent);
+        const coolDown = ecs.getComponent(e, CooldownComponent);
+
+        if (coolDown) {
+            continue;
+        }
 
         // X. Si l'énergie n'est pas au maximum et qu'il y a de la nourriture
         handleEating(e, energyComponent, foodStockComponent);
@@ -41,9 +47,6 @@ export default function GroundhogSystem(ecs: ECS) {
         */
         const wantToStockFood = foodStockComponent.amount >= foodAmountToKeep;
 
-        if (foodStockComponent.amount > 0) {
-            logger(e, `Actuellement en possession de ${foodStockComponent.amount} nourriture, je ne veux qu'en garder ${foodAmountToKeep}, mon wantToStockFood est donc à ${wantToStockFood}`)
-        }
         // 1. Retourner au terrier
         // 1.1 - Plus d'énergie
         // 1.2 - Trop de nourriture dans le stock
@@ -80,9 +83,10 @@ export default function GroundhogSystem(ecs: ECS) {
 
                         logger(e, `Je restock le terrier de ${foodToGive}!`)
                         giveFoodToStock(foodStockComponent, burrowHomeFoodStock, foodToGive);
+                        ecs.addComponent(e, new CooldownComponent(100))
                         ecs.removeComponent(e, MoveToIntentComponent)
                         continue;
-                    } else {
+                    } else if (energyComponent.energy < 10) {
                         // position-terrier2. Je prends de la nourriture
                         const foodToTake = Math.min(
                             burrowHomeFoodStock.amount,
@@ -90,6 +94,7 @@ export default function GroundhogSystem(ecs: ECS) {
                         )
                         logger(e, `Je mange au terrier ${foodToTake}!`)
                         giveFoodToStock(burrowHomeFoodStock, foodStockComponent, foodToTake);
+                        ecs.addComponent(e, new CooldownComponent(100))
                         ecs.removeComponent(e, MoveToIntentComponent)
                         continue;
                     }
@@ -109,6 +114,7 @@ export default function GroundhogSystem(ecs: ECS) {
 
                     // position-terrier3. Je cueille un arbre
                     giveFoodToStock(treeFoodStockComponent, foodStockComponent, foodToTake);
+                    ecs.addComponent(e, new CooldownComponent(500))
                     continue;
                 }
                 throw new Error("vers quoi on va en fait ??")
@@ -206,6 +212,7 @@ export default function GroundhogSystem(ecs: ECS) {
         const barComponent = ecs.getComponent(e, BarComponent)!; // Récupère la seule barre de l'entité
         barComponent.value = energyComponent.energy; // Met à jour la barre d'énergie
     }
+
     function logger(e: Entity, action: string) {
         console.log(`GroundHogSystem - e:${e} - ${action}`)
     }

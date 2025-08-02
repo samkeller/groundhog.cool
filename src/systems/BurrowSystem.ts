@@ -7,16 +7,20 @@ import GroundhogTagComponent from "../components/tags/GroundhogTagComponent";
 import { getSpawnCost } from "../utils/MathUtils";
 import SpawnIntentComponent from "../components/intents/SpawnIntentComponent";
 import { BarComponent } from "../components/BarComponent";
+import CooldownComponent from "../components/CooldownComponent";
 
 export default function BurrowSystem(ecs: ECS) {
     const burrows: Entity[] = ecs.getEntitiesWith(BurrowTagComponent, FoodStockComponent, PositionComponent, OwnedByComponent);
 
-    for (const entity of burrows) {
-        const food = ecs.getComponent(entity, FoodStockComponent)!;
-        const position = ecs.getComponent(entity, PositionComponent);
-        const owner = ecs.getComponent(entity, OwnedByComponent);
+    for (const e of burrows) {
+        const food = ecs.getComponent(e, FoodStockComponent)!;
+        const position = ecs.getComponent(e, PositionComponent)!;
+        const owner = ecs.getComponent(e, OwnedByComponent)!;
+        const coolDown = ecs.getComponent(e, CooldownComponent);
 
-        if (!food || !position || !owner) return;
+        if (coolDown) {
+            continue;
+        }
 
         // 1. Compter les marmottes du joueur
         const marmottes = ecs.getEntitiesWith(GroundhogTagComponent, OwnedByComponent).filter(e =>
@@ -32,15 +36,17 @@ export default function BurrowSystem(ecs: ECS) {
         // 3. Déduction de la nourriture
         food.amount -= cost;
 
-        ecs.addComponent(entity, new SpawnIntentComponent(
+        ecs.addComponent(e, new SpawnIntentComponent(
             "groundhog",
             position,
-            entity,
+            e,
             owner.ownerId
-        ))
+        ));
+
+        ecs.addComponent(e, new CooldownComponent(cost * 50))
 
         // Update Bar
-        const barComponent = ecs.getComponent(entity, BarComponent)!;
+        const barComponent = ecs.getComponent(e, BarComponent)!;
         barComponent.value = food.amount; // Met à jour la barre de nourriture
     }
 }

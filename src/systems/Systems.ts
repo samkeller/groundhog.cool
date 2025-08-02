@@ -14,6 +14,7 @@ import VisionSystem from "./VisionSystem";
 import DrawSystem from "./DrawSystem";
 import BarRenderSystem from "./BarRenderSystem";
 import { Container } from "pixi.js";
+import { CooldownSystem } from "./CoolDownSystem";
 
 export default function RunSystems(
     ecs: ECS,
@@ -41,4 +42,5 @@ function runResolutionSystems(ecs: ECS, dataMap: TileMap, context: TickContext) 
 function runDrawSystems(ecs: ECS, objectContainer: Container, context: TickContext) {
     DrawSystem(ecs, objectContainer);
     BarRenderSystem(ecs, objectContainer, context)
+    CooldownSystem(ecs)
 }
