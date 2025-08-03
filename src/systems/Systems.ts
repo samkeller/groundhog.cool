@@ -16,15 +16,14 @@ import BarRenderSystem from "./BarRenderSystem";
 import { Container } from "pixi.js";
 import { CooldownSystem } from "./CoolDownSystem";
 import EnergySystem from "./EnergySystem";
+import { GameServices } from "../core/GameServices";
 
 export default function RunSystems(
     ecs: ECS,
-    dataMap: TileMap,
-    context: TickContext,
-    objectContainer: Container
+    gameServices: GameServices
 ) {
     runIntentSystems(ecs);
-    runResolutionSystems(ecs, dataMap, context);
+    runResolutionSystems(ecs);
     runDrawSystems(ecs, objectContainer, context);
 }
 
@@ -33,15 +32,17 @@ function runIntentSystems(ecs: ECS) {
     GroundhogSystem(ecs);
     BurrowSystem(ecs);
 }
-function runResolutionSystems(ecs: ECS, dataMap: TileMap, context: TickContext) {
-    MoveToSystem(ecs, dataMap);
+
+function runResolutionSystems(ecs: ECS, gameServices: GameServices) {
+    MoveToSystem(ecs, gameServices.world.getMap());
     PathSystem(ecs);
-    MoveSystem(ecs, dataMap, context);
-    SpawnSystem(ecs, context);
-    VisionSystem(ecs, context);
+    MoveSystem(ecs, gameServices.world.getMap(), gameServices.spatial);
+    SpawnSystem(ecs, gameServices.assets, gameServices.spatial);
+    VisionSystem(ecs, gameServices.spatial);
     EnergySystem(ecs);
 }
-function runDrawSystems(ecs: ECS, objectContainer: Container, context: TickContext) {
+
+function runDrawSystems(ecs: ECS, gameServices: GameServices) {
     DrawSystem(ecs, objectContainer);
     BarRenderSystem(ecs, objectContainer, context)
     CooldownSystem(ecs)

@@ -2,12 +2,12 @@ import { ECS } from "../ECS";
 import PositionComponent from "../components/PositionComponent";
 import MoveIntentComponent from "../components/intents/MoveIntentComponent";
 import EnergyComponent from "../components/EnergyComponent";
-import { TileMap } from "../types/TileMap";
 import MoveUtils from "../utils/MoveUtils";
 import CanMoveComponent from "../components/CanMoveComponent";
-import TickContext from "../components/context/TickContext";
+import { SpatialService } from "../services/SpatialService";
+import { TileMap } from "../types/TileMap";
 
-export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
+export function MoveSystem(ecs: ECS, map: TileMap, spatialService: SpatialService) {
   const entities = ecs.getEntitiesWith(MoveIntentComponent, PositionComponent, CanMoveComponent);
 
   for (const e of entities) {
@@ -54,7 +54,7 @@ export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
     // Nettoyer l'intention après application
     ecs.removeComponent(e, MoveIntentComponent);
 
-    // Update contexte
-    context.updateSpatialIndex(e, posCopy, result.nextPosition)
+    // Mise à jour de l'index spatial via le service dédié
+    spatialService.update(e, posCopy, result.nextPosition);
   }
 }

@@ -5,10 +5,10 @@ import BurrowTagComponent from './components/tags/BurrowTagComponent';
 import PositionComponent from './components/PositionComponent';
 import { createPlayer } from './factories/PlayerFactory';
 import OwnedByComponent from './components/relations/OwnedByComponent';
-import TickContext from './components/context/TickContext';
 import getTestMap from './maps/TestMap1';
 import { loadAssets } from './utils/AssetLoader';
 import RunSystems from './systems/Systems';
+import { GameServices } from './core/GameServices';
 
 (async () => {
     // Déjà initialisé, on ne fait rien
@@ -58,12 +58,12 @@ import RunSystems from './systems/Systems';
     gameContainer.x = centerX - burrowPos.x;
     gameContainer.y = centerY - burrowPos.y;
 
-    const context = new TickContext(dataMap, assets);
+    const gameServices = new GameServices(dataMap, assets, gameContainer)
 
     app.ticker.speed = 0.5
   
     app.ticker.add(() => {
-        RunSystems(ecs, dataMap, context, objectContainer)
+        RunSystems(ecs, gameServices)
     });
 
     // Input event listeners
