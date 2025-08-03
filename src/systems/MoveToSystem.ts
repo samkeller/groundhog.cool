@@ -5,6 +5,7 @@ import { TileMap } from "../types/TileMap";
 import CanMoveComponent from "../components/CanMoveComponent";
 import PathfindingUtils from "../utils/PathfindingUtils";
 import PathComponent from "../components/PathComponent";
+import { positionsAreEqual } from "../utils/PathUtils";
 
 export default function MoveToSystem(ecs: ECS, map: TileMap) {
     // Instanciation unique de PathfindingUtils pour ce tick
@@ -12,10 +13,16 @@ export default function MoveToSystem(ecs: ECS, map: TileMap) {
     const entities = ecs.getEntitiesWith(PositionComponent, MoveToIntentComponent, CanMoveComponent);
 
     for (const e of entities) {
-        const pos = ecs.getComponent(e, PositionComponent)!;
+        const positionComponent = ecs.getComponent(e, PositionComponent)!;
         const moveToEntity = ecs.getComponent(e, MoveToIntentComponent)!;
         const moveToPosition = ecs.getComponent(moveToEntity.target, PositionComponent)!;
         let pathComponent = ecs.getComponent(e, PathComponent);
+
+        // - On est déjà arrivés
+        if (positionsAreEqual(moveToPosition, positionComponent)) {
+            ecs.removeComponent(e, PathComponent)
+            continue;
+        }
 
         // Cas où le chemin doit être recalculé :
         // - Pas de PathComponent
@@ -24,18 +31,18 @@ export default function MoveToSystem(ecs: ECS, map: TileMap) {
         const shouldRecalculatePath =
             !pathComponent ||
             !pathComponent.path.length ||
-             (
-                moveToPosition.x !== pathComponent.path[pathComponent.path.length - 1].x ||
-                moveToPosition.y !== pathComponent.path[pathComponent.path.length - 1].y
+            !positionsAreEqual(
+                moveToPosition,
+                pathComponent.path[pathComponent.path.length - 1]
             );
+
         if (shouldRecalculatePath) {
-            const pathSteps = pathfinder.getTilesPathFinding(pos, moveToPosition);
+            const pathSteps = pathfinder.getTilesPathFinding(positionComponent, moveToPosition);
             if (!pathSteps || pathSteps.length === 0) {
-                ecs.removeComponent(e, PathComponent);
+                // Pas de chemin valide !
                 continue;
             }
             ecs.addComponent(e, new PathComponent(pathSteps));
-            pathComponent = ecs.getComponent(e, PathComponent);
         }
     }
 }

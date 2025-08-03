@@ -11,7 +11,6 @@ export default function PathSystem(ecs: ECS) {
     for (const e of entities) {
         const path = ecs.getComponent(e, PathComponent)!;
         const pos = ecs.getComponent(e, PositionComponent)!;
-        const canMove = ecs.getComponent(e, CanMoveComponent)!;
 
         const nextStep = path.path[0];
         if (positionsAreEqual(pos, nextStep)) {
@@ -22,7 +21,6 @@ export default function PathSystem(ecs: ECS) {
         if (!path.path.length) {
             // Path Vide
             ecs.removeComponent(e, PathComponent);
-            ecs.removeComponent(e, MoveIntentComponent);
             continue;
         }
 

@@ -43,7 +43,7 @@ export default function BurrowSystem(ecs: ECS) {
             owner.ownerId
         ));
 
-        ecs.addComponent(e, new CooldownComponent(cost * 50))
+        ecs.addComponent(e, new CooldownComponent(cost * 30))
 
         // Update Bar
         const barComponent = ecs.getComponent(e, BarComponent)!;

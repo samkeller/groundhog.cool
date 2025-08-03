@@ -15,7 +15,7 @@ export default class PathfindingUtils {
     private getPathFinding(from: TilePosition, to: TilePosition): number[][] {
         const finder = new AStarFinder({
             heuristic: Heuristic.manhattan,
-            diagonalMovement: DiagonalMovement.Always,
+            diagonalMovement: DiagonalMovement.OnlyWhenNoObstacles,
             dontCrossCorners: true
         });
 

@@ -33,7 +33,12 @@ export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
 
     // Énergie
     if (energyComponent) {
-      energyComponent.energy = Math.max(0, energyComponent.energy - 0.1);
+      energyComponent.energy = Math.floor(
+        Math.max(
+          0,
+          energyComponent.energy - 0.1
+        ) * 10
+      ) / 10
 
       const newSpeed = energyComponent ?
         Math.max(

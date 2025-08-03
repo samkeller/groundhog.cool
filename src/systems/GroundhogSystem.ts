@@ -46,7 +46,7 @@ export default function GroundhogSystem(ecs: ECS) {
         if (
             !positionsAreEqual(positionComponent, burrowHomePosition) &&
             (
-                moveToIntentComponent &&
+                !moveToIntentComponent ||
                 moveToIntentComponent.target !== burrowHomeEntity
             ) &&
             (
@@ -54,7 +54,8 @@ export default function GroundhogSystem(ecs: ECS) {
                 wantToStockFood // 2. Inventaire plein
             )
         ) {
-            logger(e, `Je veux retourner à la maison !`)
+            const reason = energyComponent.energy < 10 ? "fatigue" : "stock"
+            logger(e, `Je veux retourner à la maison ! Cause: ${reason}`)
             goToTarget(e, burrowHomeEntity);
             continue;
         }
@@ -65,7 +66,7 @@ export default function GroundhogSystem(ecs: ECS) {
             /**
              * X. On voulait arrive quelque part, on y est !
             */
-            if (moveToIntentComponent && positionsAreEqual(positionComponent, moveToIntentPosition)) {
+            if (positionsAreEqual(positionComponent, moveToIntentPosition)) {
 
                 if (positionsAreEqual(burrowHomePosition, moveToIntentPosition)) {
                     const burrowHomeFoodStock = ecs.getComponent(burrowHomeEntity, FoodStockComponent)!;
@@ -78,7 +79,7 @@ export default function GroundhogSystem(ecs: ECS) {
                             burrowHomeFoodStock.amountMax - burrowHomeFoodStock.amount
                         )
 
-                        logger(e, `Je restock le terrier de ${foodToGive}!`)
+                        logger(e, `Je restock le terrier de [${foodToGive}]!`)
                         giveFoodToStock(foodStockComponent, burrowHomeFoodStock, foodToGive);
                         ecs.addComponent(e, new CooldownComponent(100))
                         ecs.removeComponent(e, MoveToIntentComponent)
@@ -86,10 +87,11 @@ export default function GroundhogSystem(ecs: ECS) {
                     } else if (energyComponent.energy < 10) {
                         // position-terrier2. Je prends de la nourriture
                         const foodToTake = Math.min(
+                            foodAmountToKeep,
                             burrowHomeFoodStock.amount,
                             foodStockComponent.amountMax - foodStockComponent.amount
                         )
-                        logger(e, `Je mange au terrier ${foodToTake}!`)
+                        logger(e, `Je prends [${foodToTake}] du terrier!`)
                         giveFoodToStock(burrowHomeFoodStock, foodStockComponent, foodToTake);
                         ecs.addComponent(e, new CooldownComponent(100))
                         ecs.removeComponent(e, MoveToIntentComponent)
@@ -107,42 +109,44 @@ export default function GroundhogSystem(ecs: ECS) {
                         foodStockComponent.amountMax - foodStockComponent.amount
                     )
 
-                    logger(e, `Je colecte l'arbre de ${foodToTake}!`)
+                    logger(e, `Je prends [${foodToTake}] de l'arbre !`)
 
                     // position-terrier3. Je cueille un arbre
                     giveFoodToStock(treeFoodStockComponent, foodStockComponent, foodToTake);
                     ecs.addComponent(e, new CooldownComponent(500))
+                    ecs.removeComponent(e, MoveToIntentComponent)
                     continue;
                 }
                 throw new Error("vers quoi on va en fait ??")
 
             }
             // Pas encore arrivé.
-        } else {
-            // X. Cherche un arbre
-            const visionComponent = ecs.getComponent(e, VisionComponent)!;
-            for (const targetId of visionComponent.visibles) {
-                const isTreeComponent = ecs.getComponent(targetId, TreeTagComponent);
-                // Je vois un arbre !
-                if (isTreeComponent) {
-                    const treePositionComponent = ecs.getComponent(targetId, PositionComponent)!;
+            continue;
+        }
 
-                    if (
-                        !positionsAreEqual(positionComponent, treePositionComponent)
-                    ) {
+        // X. Cherche un arbre
+        const visionComponent = ecs.getComponent(e, VisionComponent)!;
+        for (const targetId of visionComponent.visibles) {
+            const isTreeComponent = ecs.getComponent(targetId, TreeTagComponent);
+            // Je vois un arbre !
+            if (isTreeComponent) {
+                const treePositionComponent = ecs.getComponent(targetId, PositionComponent)!;
 
-                        logger(e, `J'ai trouvé un arbre en [x:${treePositionComponent.x}, y${treePositionComponent.y}, j'y go !]`)
-                        ecs.addComponent(e, new MoveToIntentComponent(targetId));
-                        break; // Pas besoin d'autre chose
-                    }
+                if (
+                    !positionsAreEqual(positionComponent, treePositionComponent)
+                ) {
+
+                    logger(e, `J'ai trouvé un arbre en [x:${treePositionComponent.x}, y:${treePositionComponent.y}], j'y go !`)
+                    ecs.addComponent(e, new MoveToIntentComponent(targetId));
+                    break; // Pas besoin d'autre chose
                 }
             }
+        }
 
-            // X. Random déplacements
-            if (Math.random() < 0.5) {
-                doRandomMove(e, canMoveComponent)
-                continue;
-            }
+        // X. Random déplacements
+        if (Math.random() < 0.5) {
+            doRandomMove(e, canMoveComponent)
+            continue;
         }
 
     }
