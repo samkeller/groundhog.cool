@@ -1,6 +1,6 @@
-## Ants.cool (ts version)
+## groundhogs.cool (ts version)
 
-ants.cool-ts est un jeu de simulation en TypeScript utilisant PixiJS pour l'affichage 2D. Le joueur contrôle une colonie de marmottes (groundhogs) qui peuvent se déplacer, consommer de l'énergie, et se reproduire à partir d'un terrier (burrow). Le terrain est généré procéduralement avec du bruit de Perlin et contient différents types de tuiles (herbe, eau, montagne) ainsi que des arbres générant de la nourriture.
+groundhogs.cool-ts est un jeu de simulation en TypeScript utilisant PixiJS pour l'affichage 2D. Le joueur contrôle une colonie de marmottes (groundhogs) qui peuvent se déplacer, consommer de l'énergie, et se reproduire à partir d'un terrier (burrow). Le terrain est généré procéduralement avec du bruit de Perlin et contient différents types de tuiles (herbe, eau, montagne) ainsi que des arbres générant de la nourriture.
 
 Architecture
 1. Entrée principale

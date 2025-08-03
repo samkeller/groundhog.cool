@@ -1,5 +1,5 @@
 {
-  "name": "ants.cool-ts",
+  "name": "groundhogs.cool-ts",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@gitlab-samkeller:perso-ske/ants.cool-ts.git"
+    "url": "git@gitlab-samkeller:perso-ske/groundhogs.cool-ts.git"
   },
   "keywords": [],
   "author": "",
