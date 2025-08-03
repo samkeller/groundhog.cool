@@ -13,11 +13,11 @@ export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
   for (const e of entities) {
     const positionComponent = ecs.getComponent(e, PositionComponent)!;
     const move = ecs.getComponent(e, MoveIntentComponent)!;
-    const energy = ecs.getComponent(e, EnergyComponent);
+    const energyComponent = ecs.getComponent(e, EnergyComponent);
     const canMoveComponent = ecs.getComponent(e, CanMoveComponent)!;
 
     const posCopy = { ...positionComponent }
-    const result = new MoveUtils().findValidDirection(map, positionComponent, move.speed, move.rotation);
+    const result = new MoveUtils().findValidDirection(map, positionComponent, canMoveComponent.speed, move.rotation);
 
     if (!result) {
       // Pas de déplacement possible
@@ -29,12 +29,22 @@ export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
     positionComponent.y = result.nextPosition.y;
     move.rotation = result.nextDirection;
 
-    // Énergie
-    if (energy) {
-      energy.energy = Math.max(0, energy.energy - 0.1);
-    }
-
     canMoveComponent.direction = result.nextDirection
+
+    // Énergie
+    if (energyComponent) {
+      energyComponent.energy = Math.max(0, energyComponent.energy - 0.1);
+
+      const newSpeed = energyComponent ?
+        Math.max(
+          energyComponent.energy / 10,
+          0.1
+        ) :
+        0.5;
+      if (newSpeed !== canMoveComponent.speed) {
+        canMoveComponent.speed = newSpeed
+      }
+    }
 
     // Nettoyer l'intention après application
     ecs.removeComponent(e, MoveIntentComponent);

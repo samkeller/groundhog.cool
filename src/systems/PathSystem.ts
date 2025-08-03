@@ -18,7 +18,7 @@ export default function PathSystem(ecs: ECS) {
             // Etape atteinte !
             path.path.shift();
         }
-        
+
         if (!path.path.length) {
             // Path Vide
             ecs.removeComponent(e, PathComponent);
@@ -28,6 +28,6 @@ export default function PathSystem(ecs: ECS) {
 
         // Génère un MoveIntent vers la prochaine étape
         const direction = directionBetweenPoints(pos, nextStep);
-        ecs.addComponent(e, new MoveIntentComponent(canMove.speed, direction));
+        ecs.addComponent(e, new MoveIntentComponent(direction));
     }
 }

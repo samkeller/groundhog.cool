@@ -13,8 +13,6 @@ import { positionsAreEqual } from "../utils/PathUtils";
 import { BarComponent } from "../components/BarComponent";
 import CooldownComponent from "../components/CooldownComponent";
 
-const FOOD_ENERGY_MULTIPLIER = 5;
-
 export default function GroundhogSystem(ecs: ECS) {
     const groundhogs: Entity[] = ecs.getEntitiesWith(GroundhogTagComponent);
 
@@ -32,11 +30,6 @@ export default function GroundhogSystem(ecs: ECS) {
             continue;
         }
 
-        // X. Si l'énergie n'est pas au maximum et qu'il y a de la nourriture
-        handleEating(e, energyComponent, foodStockComponent);
-
-        updateEnergyBar(e, energyComponent)
-
         /**
         * Quantité de nourriture à toujours garder sur soi (jamais trop prudent).
         */
@@ -52,6 +45,10 @@ export default function GroundhogSystem(ecs: ECS) {
         // 1.2 - Trop de nourriture dans le stock
         if (
             !positionsAreEqual(positionComponent, burrowHomePosition) &&
+            (
+                moveToIntentComponent &&
+                moveToIntentComponent.target !== burrowHomeEntity
+            ) &&
             (
                 energyComponent.energy < 10 || // 1. Plus d'énergie
                 wantToStockFood // 2. Inventaire plein
@@ -143,36 +140,11 @@ export default function GroundhogSystem(ecs: ECS) {
 
             // X. Random déplacements
             if (Math.random() < 0.5) {
-                doRandomMove(e, energyComponent, canMoveComponent)
+                doRandomMove(e, canMoveComponent)
                 continue;
             }
         }
 
-    }
-
-    function handleEating(
-        e: Entity,
-        energyComponent: EnergyComponent,
-        foodStockComponent: FoodStockComponent,
-    ) {
-        const missingEnergy = energyComponent.maxEnergy - energyComponent.energy;
-
-        if (energyComponent.energy < energyComponent.maxEnergy / 2 &&
-            foodStockComponent.amount > 0 &&
-            foodStockComponent.amount * FOOD_ENERGY_MULTIPLIER > missingEnergy) {
-
-            // Calculer la quantité de nourriture nécessaire pour restaurer l'énergie manquante
-            const foodNeeded = Math.min(
-                foodStockComponent.amount,
-                Math.ceil(missingEnergy / FOOD_ENERGY_MULTIPLIER)
-            );
-            const energyToRestore = foodNeeded * FOOD_ENERGY_MULTIPLIER;
-            logger(e, `Je mange ${foodNeeded} de nourritures (${energyComponent} d'énergie)`);
-
-            // Consommer la nourriture et restaurer l'énergie
-            foodStockComponent.amount -= foodNeeded;
-            energyComponent.energy += energyToRestore;
-        }
     }
 
     function giveFoodToStock(
@@ -195,22 +167,12 @@ export default function GroundhogSystem(ecs: ECS) {
 
     function doRandomMove(
         e: Entity,
-        energyComponent: EnergyComponent,
         canMoveComponent: CanMoveComponent
     ) {
-        const speed = energyComponent.energy / 100;
 
         // TODO - MoveUtils.findValidDirection()
         const newDirection = (canMoveComponent.direction + Math.random() * 20 - 10) % 360;
-        ecs.addComponent(e, new MoveIntentComponent(speed, newDirection))
-    }
-
-    function updateEnergyBar(
-        e: Entity,
-        energyComponent: EnergyComponent
-    ) {
-        const barComponent = ecs.getComponent(e, BarComponent)!; // Récupère la seule barre de l'entité
-        barComponent.value = energyComponent.energy; // Met à jour la barre d'énergie
+        ecs.addComponent(e, new MoveIntentComponent(newDirection))
     }
 
     function logger(e: Entity, action: string) {
