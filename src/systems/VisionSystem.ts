@@ -1,7 +1,7 @@
+import MemoryComponent from "../components/MemoryComponent";
 import PositionComponent from "../components/PositionComponent";
 import VisionComponent from "../components/VisionComponent";
 import { ECS } from "../ECS";
-import { TILE_SIZE } from "../maps/TerrainVariables";
 import { SpatialService } from "../services/SpatialService";
 
 export default function VisionSystem(ecs: ECS, spatialService: SpatialService) {
@@ -17,5 +17,12 @@ export default function VisionSystem(ecs: ECS, spatialService: SpatialService) {
         
         // Filtrage pour exclure l'entité elle-même de sa propre vision
         vision.visibles = visibles.filter(entityId => entityId !== e);
+
+        const memorySystem = ecs.getComponent(e, MemoryComponent)
+        if (memorySystem) {
+            for (const visible of vision.visibles) {
+                memorySystem.addMemory(visible)
+            }
+        }
     }
 }
