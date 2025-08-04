@@ -1,20 +1,24 @@
-import { Container, Renderer } from "pixi.js";
+import { Application, Container, Renderer } from "pixi.js";
 import { Entity } from "../ECS";
 import { TileMap } from "../types/TileMap";
 import { GameAssets } from "../utils/AssetLoader";
 import MapDraw from "../maps/MapDraw";
 import { PixelPosition } from "../types/Position";
 
-export class ContainerService {
+export class ApplicationService {
+
     public stageContainer!: Container;
     public gameContainer!: Container;
     public mapContainer?: Container;
     public objectsContainer?: Container;
+    private overlayContainer?: Container;
+    private app: Application
 
-    constructor(stageContainer: Container) {
-        this.stageContainer = stageContainer;
+    constructor(app: Application) {
+        this.app = app;
+        this.stageContainer = app.stage;
         const gameContainer = new Container();
-        stageContainer.addChild(gameContainer);
+        this.stageContainer.addChild(gameContainer);
         this.gameContainer = gameContainer;
     }
 
@@ -58,9 +62,22 @@ export class ContainerService {
         return childContainer
     }
 
+    getOverlayContainer() {
+        // Si l'overlay n'existe pas, on le crée et on l'ajoute à la scène
+        if (!this.overlayContainer) {
+            const overlayContainer = new Container();
+            overlayContainer.label = "overlay";
+            overlayContainer.width = this.app.screen.width;
+            overlayContainer.height = this.app.screen.height;
+            this.stageContainer.addChild(overlayContainer);
+            this.overlayContainer = overlayContainer
+        }
+        return this.overlayContainer
+    }
+
     private throwIfNotInitCorrectly() {
         if (!this.objectsContainer || !this.mapContainer) {
-            throw new Error("ContainerService not properly initalized")
+            throw new Error("ApplicationService not properly initalized")
         }
     }
 }

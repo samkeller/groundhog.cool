@@ -4,7 +4,6 @@ import BurrowTagComponent from './components/tags/BurrowTagComponent';
 import PositionComponent from './components/PositionComponent';
 import { createPlayer } from './factories/PlayerFactory';
 import OwnedByComponent from './components/relations/OwnedByComponent';
-import getTestMap from './maps/TestMap1';
 import RunSystems from './systems/Systems';
 import BuildGameServices from './services/AsyncBuildGameServices';
 
@@ -13,15 +12,7 @@ import BuildGameServices from './services/AsyncBuildGameServices';
     if ((window as any).__pixi_playground_initialized) return;
     (window as any).__pixi_playground_initialized = true;
 
-    const app = new Application();
-
-    // Initialize the application
-    await app.init({ background: '#ccccccff', resizeTo: document.body });
-
-    // Append the application canvas to the document body
-    document.body.appendChild(app.canvas);
-
-    const [ecs, gameServices] = await BuildGameServices(app.stage)
+    const [app, ecs, gameServices] = await BuildGameServices()
 
     // Ajout du joueur comme entité ECS
     const playerEntity = createPlayer(ecs);
@@ -35,17 +26,17 @@ import BuildGameServices from './services/AsyncBuildGameServices';
     }
 
     ecs.addComponent(burrow, new OwnedByComponent(playerEntity))
-    gameServices.containers.centerGameContainer(app.renderer, burrowPos)
+    gameServices.application.centerGameContainer(app.renderer, burrowPos)
 
     app.ticker.speed = 0.5
-  
+
     app.ticker.add(() => {
-        RunSystems(ecs, gameServices)
+        RunSystems(ecs, gameServices);
     });
 
     // Input event listeners
-    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, gameServices.containers.gameContainer));
+    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, gameServices.application.gameContainer));
     app.canvas.addEventListener("mousedown", (evt) => onMouseDownFn(evt));
-    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, gameServices.containers.gameContainer));
-    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, gameServices.containers.gameContainer));
+    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, gameServices.application.gameContainer));
+    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, gameServices.application.gameContainer));
 })();

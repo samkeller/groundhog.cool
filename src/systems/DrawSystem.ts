@@ -2,10 +2,9 @@ import { ECS } from "../ECS";
 import CanMoveComponent from "../components/CanMoveComponent";
 import DrawableComponent from "../components/DrawableComponent";
 import PositionComponent from "../components/PositionComponent";
-import { Container } from "pixi.js";
-import { ContainerService } from "../services/ContainerService";
+import { ApplicationService } from "../services/ApplicationService";
 
-export default function DrawSystem(ecs: ECS, containerService: ContainerService) {
+export default function DrawSystem(ecs: ECS, applicationService: ApplicationService) {
     const entities = ecs.getEntitiesWith(DrawableComponent, PositionComponent);
 
     for (const e of entities) {
@@ -14,7 +13,7 @@ export default function DrawSystem(ecs: ECS, containerService: ContainerService)
         const canMoveComponent = ecs.getComponent(e, CanMoveComponent);
 
         if (drawable && position) {
-            const entityContainer = containerService.getEntityContainer(e);
+            const entityContainer = applicationService.getEntityContainer(e);
 
             if (!drawable.initialized) {
                 if (drawable.sprite.anchor.x === 0 && drawable.sprite.anchor.y === 0)

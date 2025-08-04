@@ -13,7 +13,9 @@ import DrawSystem from "./DrawSystem";
 import BarRenderSystem from "./BarRenderSystem";
 import { CooldownSystem } from "./CoolDownSystem";
 import EnergySystem from "./EnergySystem";
+import OverlaySystem from "./OverlaySystem";
 import { GameServices } from "../services/GameServices";
+import { Application } from "pixi.js";
 
 export default function RunSystems(
     ecs: ECS,
@@ -40,7 +42,8 @@ function runResolutionSystems(ecs: ECS, gameServices: GameServices) {
 }
 
 function runDrawSystems(ecs: ECS, gameServices: GameServices) {
-    DrawSystem(ecs, gameServices.containers);
-    BarRenderSystem(ecs, gameServices.containers, gameServices.assets)
-    CooldownSystem(ecs)
+    DrawSystem(ecs, gameServices.application);
+    BarRenderSystem(ecs, gameServices.application, gameServices.assets);
+    OverlaySystem(ecs, gameServices.application);
+    CooldownSystem(ecs);
 }
