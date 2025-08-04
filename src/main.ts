@@ -1,14 +1,12 @@
 import { Application, Container } from 'pixi.js';
 import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions";
-import MapDraw from './maps/MapDraw';
 import BurrowTagComponent from './components/tags/BurrowTagComponent';
 import PositionComponent from './components/PositionComponent';
 import { createPlayer } from './factories/PlayerFactory';
 import OwnedByComponent from './components/relations/OwnedByComponent';
-import TickContext from './components/context/TickContext';
 import getTestMap from './maps/TestMap1';
-import { loadAssets } from './utils/AssetLoader';
 import RunSystems from './systems/Systems';
+import BuildGameServices from './services/AsyncBuildGameServices';
 
 (async () => {
     // Déjà initialisé, on ne fait rien
@@ -23,21 +21,7 @@ import RunSystems from './systems/Systems';
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
 
-    const gameContainer = new Container();
-
-    app.stage.addChild(gameContainer);
-
-    // Chargement des assets
-    const assets = await loadAssets();
-
-    // Chargement de la map et dessin
-    // const [ecs, dataMap] = await getDataMap(assets) // DataMap = tiles !
-    const [ecs, dataMap] = await getTestMap(assets) // DataMap = tiles !
-    const drawnMap = await MapDraw(dataMap, assets)
-
-    const objectContainer = new Container()
-    gameContainer.addChild(drawnMap)
-    gameContainer.addChild(objectContainer)
+    const [ecs, gameServices] = await BuildGameServices(app.stage)
 
     // Ajout du joueur comme entité ECS
     const playerEntity = createPlayer(ecs);
@@ -51,24 +35,17 @@ import RunSystems from './systems/Systems';
     }
 
     ecs.addComponent(burrow, new OwnedByComponent(playerEntity))
-
-    // Move the container to the burrow
-    const centerX = app.renderer.width / 2;
-    const centerY = app.renderer.height / 2;
-    gameContainer.x = centerX - burrowPos.x;
-    gameContainer.y = centerY - burrowPos.y;
-
-    const context = new TickContext(dataMap, assets);
+    gameServices.containers.centerGameContainer(app.renderer, burrowPos)
 
     app.ticker.speed = 0.5
   
     app.ticker.add(() => {
-        RunSystems(ecs, dataMap, context, objectContainer)
+        RunSystems(ecs, gameServices)
     });
 
     // Input event listeners
-    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, gameContainer));
+    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, gameServices.containers.gameContainer));
     app.canvas.addEventListener("mousedown", (evt) => onMouseDownFn(evt));
-    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, gameContainer));
-    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, gameContainer));
+    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, gameServices.containers.gameContainer));
+    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, gameServices.containers.gameContainer));
 })();

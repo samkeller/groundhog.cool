@@ -2,12 +2,11 @@ import { ECS } from "../ECS";
 import PositionComponent from "../components/PositionComponent";
 import MoveIntentComponent from "../components/intents/MoveIntentComponent";
 import EnergyComponent from "../components/EnergyComponent";
-import { TileMap } from "../types/TileMap";
-import MoveUtils from "../utils/MoveUtils";
 import CanMoveComponent from "../components/CanMoveComponent";
-import TickContext from "../components/context/TickContext";
+import { SpatialService } from "../services/SpatialService";
+import { WorldService } from "../services/WorldService";
 
-export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
+export function MoveSystem(ecs: ECS, worldService: WorldService, spatialService: SpatialService) {
   const entities = ecs.getEntitiesWith(MoveIntentComponent, PositionComponent, CanMoveComponent);
 
   for (const e of entities) {
@@ -17,7 +16,7 @@ export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
     const canMoveComponent = ecs.getComponent(e, CanMoveComponent)!;
 
     const posCopy = { ...positionComponent }
-    const result = new MoveUtils().findValidDirection(map, positionComponent, canMoveComponent.speed, move.rotation);
+    const result = worldService.findValidDirection(positionComponent, canMoveComponent.speed, move.rotation);
 
     if (!result) {
       // Pas de déplacement possible
@@ -54,7 +53,7 @@ export function MoveSystem(ecs: ECS, map: TileMap, context: TickContext) {
     // Nettoyer l'intention après application
     ecs.removeComponent(e, MoveIntentComponent);
 
-    // Update contexte
-    context.updateSpatialIndex(e, posCopy, result.nextPosition)
+    // Mise à jour de l'index spatial
+    spatialService.update(e, posCopy, result.nextPosition);
   }
 }

@@ -10,7 +10,6 @@ import TreeTagComponent from "../components/tags/TreeTagComponent";
 import PositionComponent from "../components/PositionComponent";
 import FoodStockComponent from "../components/FoodStockComponent";
 import { positionsAreEqual } from "../utils/PathUtils";
-import { BarComponent } from "../components/BarComponent";
 import CooldownComponent from "../components/CooldownComponent";
 
 export default function GroundhogSystem(ecs: ECS) {

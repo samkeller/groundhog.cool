@@ -5,8 +5,8 @@ import { BarComponent } from "../components/BarComponent";
 import CooldownComponent from "../components/CooldownComponent";
 import PositionComponent from "../components/PositionComponent";
 import DrawableComponent from "../components/DrawableComponent";
-import { getEntityContainer } from "../utils/DrawUtils";
-import TickContext from "../components/context/TickContext";
+import { AssetService } from "../services/AssetService";
+import { ContainerService } from "../services/ContainerService";
 
 const BAR_WIDTH = TILE_SIZE * 0.6;
 const BAR_HEIGHT = 2;
@@ -19,21 +19,21 @@ const CHILD_LABELS = {
 
 export default function BarRenderSystem(
     ecs: ECS,
-    objectContainer: Container,
-    context: TickContext
+    containerService: ContainerService,
+    assetsService: AssetService
 ) {
     const entities = ecs.getEntitiesWith(BarComponent, PositionComponent, DrawableComponent);
-
+    
     for (const e of entities) {
         const bar = ecs.getComponent(e, BarComponent)!;
 
-        const entityContainer = getEntityContainer(objectContainer, e);
+        const entityContainer = containerService.getEntityContainer(e);
 
         const GROUP_LABEL = `entity-${e}-BAR-GROUP`;
         let group = entityContainer.getChildByLabel(GROUP_LABEL) as Container;
 
         if (!group) {
-            group = createBarGroup(e, bar, context)
+            group = createBarGroup(e, bar, assetsService)
             entityContainer.addChild(group);
         }
 
@@ -65,7 +65,7 @@ export default function BarRenderSystem(
 
     }
 
-    function createBarGroup(e: number, bar: BarComponent, context: TickContext): Container {
+    function createBarGroup(e: number, bar: BarComponent, assetsService: AssetService): Container {
         const drawable = ecs.getComponent(e, DrawableComponent)!;
 
         const group = new Container();
@@ -73,10 +73,9 @@ export default function BarRenderSystem(
 
         group.label = `entity-${e}-BAR-GROUP`;
 
-        // Icône (GraphicsContext déjà vectoriel)
         const iconGraphicsContext = bar.type === "energy"
-            ? context.assets.icons.bolt
-            : context.assets.icons.apple;
+            ? assetsService.getIcon('bolt')
+            : assetsService.getIcon('apple');
 
         const icon = new Graphics(iconGraphicsContext);
         icon.label = "icon";
