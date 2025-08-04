@@ -45,4 +45,16 @@ export class ContainerService {
         this.gameContainer.x = centerX - centerPosition.x;
         this.gameContainer.y = centerY - centerPosition.y;
     }
+
+    public getEntityContainer(e: Entity) {
+        const label = `entity-${e}`
+        let childContainer = this.objectsContainer.getChildByLabel(label)
+
+        if (!childContainer) {
+            childContainer = new Container();
+            childContainer.label = label;
+            this.objectsContainer.addChild(childContainer)
+        }
+        return childContainer
+    }
 }

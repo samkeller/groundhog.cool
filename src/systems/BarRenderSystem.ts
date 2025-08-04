@@ -5,8 +5,8 @@ import { BarComponent } from "../components/BarComponent";
 import CooldownComponent from "../components/CooldownComponent";
 import PositionComponent from "../components/PositionComponent";
 import DrawableComponent from "../components/DrawableComponent";
-import { getEntityContainer } from "../utils/DrawUtils";
 import { AssetService } from "../services/AssetService";
+import { ContainerService } from "../services/ContainerService";
 
 const BAR_WIDTH = TILE_SIZE * 0.6;
 const BAR_HEIGHT = 2;
@@ -19,7 +19,7 @@ const CHILD_LABELS = {
 
 export default function BarRenderSystem(
     ecs: ECS,
-    objectContainer: Container,
+    containerService: ContainerService,
     assetsService: AssetService
 ) {
     const entities = ecs.getEntitiesWith(BarComponent, PositionComponent, DrawableComponent);
@@ -27,7 +27,7 @@ export default function BarRenderSystem(
     for (const e of entities) {
         const bar = ecs.getComponent(e, BarComponent)!;
 
-        const entityContainer = getEntityContainer(objectContainer, e);
+        const entityContainer = containerService.getEntityContainer(e);
 
         const GROUP_LABEL = `entity-${e}-BAR-GROUP`;
         let group = entityContainer.getChildByLabel(GROUP_LABEL) as Container;

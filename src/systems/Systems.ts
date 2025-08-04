@@ -11,7 +11,6 @@ import { SpawnSystem } from "./SpawnSystem";
 import VisionSystem from "./VisionSystem";
 import DrawSystem from "./DrawSystem";
 import BarRenderSystem from "./BarRenderSystem";
-import { Container } from "pixi.js";
 import { CooldownSystem } from "./CoolDownSystem";
 import EnergySystem from "./EnergySystem";
 import { GameServices } from "../services/GameServices";
@@ -42,6 +41,6 @@ function runResolutionSystems(ecs: ECS, gameServices: GameServices) {
 
 function runDrawSystems(ecs: ECS, gameServices: GameServices) {
     DrawSystem(ecs, gameServices.containers.objectsContainer);
-    BarRenderSystem(ecs, gameServices.containers.objectsContainer, gameServices.assets)
+    BarRenderSystem(ecs, gameServices.containers, gameServices.assets)
     CooldownSystem(ecs)
 }
