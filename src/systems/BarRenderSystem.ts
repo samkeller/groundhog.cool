@@ -73,7 +73,6 @@ export default function BarRenderSystem(
 
         group.label = `entity-${e}-BAR-GROUP`;
 
-        // Utilisation du service assets pour récupérer les icônes
         const iconGraphicsContext = bar.type === "energy"
             ? assetsService.getIcon('bolt')
             : assetsService.getIcon('apple');

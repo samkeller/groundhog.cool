@@ -30,9 +30,6 @@ import { WorldService } from './services/WorldService';
     
     const gameServices = new GameServices(dataMap, assets, app.stage)
   
-    // Chargement de la map et dessin
-    gameServices.containers.drawMap(gameServices.world.getMap(), gameServices.assets.assets)
-
     // Ajout du joueur comme entité ECS
     const playerEntity = createPlayer(ecs);
 
@@ -45,7 +42,6 @@ import { WorldService } from './services/WorldService';
     }
 
     ecs.addComponent(burrow, new OwnedByComponent(playerEntity))
-    console.log(ecs)
     gameServices.containers.centerGameContainer(app.renderer, burrowPos)
 
     app.ticker.speed = 0.5

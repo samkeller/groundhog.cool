@@ -10,7 +10,6 @@ export class ContainerService {
     public gameContainer!: Container;
     public mapContainer!: Container;
     public objectsContainer!: Container;
-    public entityContainers = new Map<Entity, Container>();
 
     constructor(stageContainer: Container) {
         this.stageContainer = stageContainer;

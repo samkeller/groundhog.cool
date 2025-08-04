@@ -14,7 +14,6 @@ export function SpawnSystem(ecs: ECS, assetService: AssetService, spatialService
         if (!spawnIntent) return;
         
         if (spawnIntent.entity === "groundhog") {
-            // Utilisation du service assets pour récupérer la texture
             const groundhogTexture = assetService.getTexture('groundhog');
             
             created = createGroundhog(
