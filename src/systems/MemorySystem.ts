@@ -7,14 +7,15 @@ export default function MemorySystem(ecs: ECS) {
     for (const e of entitiesWithMemory) {
         const memoryComponent = ecs.getComponent(e, MemoryComponent)!
 
-        for (const memEntity of memoryComponent.memories.keys()) {
-            const memCooldown = memoryComponent.memories.get(memEntity)!;
+        const memoriesToUpdate = Array.from(memoryComponent.memories.entries());
+
+        for (const [memEntity, memCooldown] of memoriesToUpdate) {
             const newCooldown = memCooldown - 1;
 
             if (newCooldown <= 0) {
                 memoryComponent.removeMemory(memEntity);
             } else {
-                memoryComponent.setMemory(memEntity, newCooldown);
+                memoryComponent.updateMemory(memEntity, newCooldown);
             }
         }
     }

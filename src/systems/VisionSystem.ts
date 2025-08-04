@@ -20,7 +20,7 @@ export default function VisionSystem(ecs: ECS, spatialService: SpatialService) {
 
         const memorySystem = ecs.getComponent(e, MemoryComponent)
         if (memorySystem) {
-            for (const visible of visibles) {
+            for (const visible of vision.visibles) {
                 memorySystem.addMemory(visible)
             }
         }

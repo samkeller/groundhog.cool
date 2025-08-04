@@ -1,8 +1,8 @@
-import { Entity } from "../ECS";
+import { Component, Entity } from "../ECS";
 
 const MEMORY_TIMEOUT = 1000;
 
-export default class MemoryComponent {
+export default class MemoryComponent implements Component {
     memories: Map<Entity, number> = new Map()
 
     constructor() { }
@@ -11,7 +11,7 @@ export default class MemoryComponent {
         this.memories.set(entity, MEMORY_TIMEOUT)
     }
 
-    setMemory(entity: Entity, newCooldown: number) {
+    updateMemory(entity: Entity, newCooldown: number) {
         this.memories.set(entity, newCooldown)
     }
     removeMemory(entity: Entity) {
