@@ -1,6 +1,4 @@
-import TickContext from "../components/context/TickContext";
 import { ECS } from "../ECS";
-import type { TileMap } from "../types/TileMap"
 // Intent
 import TreeSystem from "./TreeSystem";
 import GroundhogSystem from "./GroundhogSystem";
@@ -16,15 +14,15 @@ import BarRenderSystem from "./BarRenderSystem";
 import { Container } from "pixi.js";
 import { CooldownSystem } from "./CoolDownSystem";
 import EnergySystem from "./EnergySystem";
-import { GameServices } from "../core/GameServices";
+import { GameServices } from "../services/GameServices";
 
 export default function RunSystems(
     ecs: ECS,
     gameServices: GameServices
 ) {
     runIntentSystems(ecs);
-    runResolutionSystems(ecs);
-    runDrawSystems(ecs, objectContainer, context);
+    runResolutionSystems(ecs, gameServices);
+    runDrawSystems(ecs, gameServices);
 }
 
 function runIntentSystems(ecs: ECS) {
@@ -43,7 +41,7 @@ function runResolutionSystems(ecs: ECS, gameServices: GameServices) {
 }
 
 function runDrawSystems(ecs: ECS, gameServices: GameServices) {
-    DrawSystem(ecs, objectContainer);
-    BarRenderSystem(ecs, objectContainer, context)
+    DrawSystem(ecs, gameServices.containers.objectsContainer);
+    BarRenderSystem(ecs, gameServices.containers.objectsContainer, gameServices.assets)
     CooldownSystem(ecs)
 }

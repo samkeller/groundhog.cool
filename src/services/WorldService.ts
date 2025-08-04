@@ -1,19 +1,22 @@
 import { TileMap, Tile } from "../types/TileMap";
 import { PixelPosition, TilePosition } from "../types/Position";
 import { pixelToTile } from "../utils/PositionUtils";
+import { ECS } from "../ECS";
+import getTestMap from "../maps/TestMap1";
+import { GameAssets } from "../utils/AssetLoader";
 
 /**
  * Service dédié à la gestion de la carte et du monde de jeu.
  * Remplace la logique map du TickContext pour appliquer le principe de responsabilité unique.
  */
 export class WorldService {
-    constructor(private map: TileMap) {}
+    constructor(private map: TileMap) { }
 
     /**
      * Récupère une tuile à partir de sa position en coordonnées de tuile.
      */
     getTileAt(position: TilePosition): Tile | null {
-        if (position.y >= 0 && position.y < this.map.length && 
+        if (position.y >= 0 && position.y < this.map.length &&
             position.x >= 0 && position.x < this.map[position.y].length) {
             return this.map[position.y][position.x];
         }
@@ -69,4 +72,5 @@ export class WorldService {
     getMap(): TileMap {
         return this.map;
     }
+
 }

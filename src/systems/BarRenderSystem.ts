@@ -6,7 +6,6 @@ import CooldownComponent from "../components/CooldownComponent";
 import PositionComponent from "../components/PositionComponent";
 import DrawableComponent from "../components/DrawableComponent";
 import { getEntityContainer } from "../utils/DrawUtils";
-import TickContext from "../components/context/TickContext";
 import { AssetService } from "../services/AssetService";
 
 const BAR_WIDTH = TILE_SIZE * 0.6;

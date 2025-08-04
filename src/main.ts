@@ -8,7 +8,8 @@ import OwnedByComponent from './components/relations/OwnedByComponent';
 import getTestMap from './maps/TestMap1';
 import { loadAssets } from './utils/AssetLoader';
 import RunSystems from './systems/Systems';
-import { GameServices } from './core/GameServices';
+import { GameServices } from './services/GameServices';
+import { WorldService } from './services/WorldService';
 
 (async () => {
     // Déjà initialisé, on ne fait rien
@@ -23,21 +24,14 @@ import { GameServices } from './core/GameServices';
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
 
-    const gameContainer = new Container();
-
-    app.stage.addChild(gameContainer);
-
     // Chargement des assets
     const assets = await loadAssets();
-
-    // Chargement de la map et dessin
-    // const [ecs, dataMap] = await getDataMap(assets) // DataMap = tiles !
     const [ecs, dataMap] = await getTestMap(assets) // DataMap = tiles !
-    const drawnMap = await MapDraw(dataMap, assets)
-
-    const objectContainer = new Container()
-    gameContainer.addChild(drawnMap)
-    gameContainer.addChild(objectContainer)
+    
+    const gameServices = new GameServices(dataMap, assets, app.stage)
+  
+    // Chargement de la map et dessin
+    gameServices.containers.drawMap(gameServices.world.getMap(), gameServices.assets.assets)
 
     // Ajout du joueur comme entité ECS
     const playerEntity = createPlayer(ecs);
@@ -51,14 +45,8 @@ import { GameServices } from './core/GameServices';
     }
 
     ecs.addComponent(burrow, new OwnedByComponent(playerEntity))
-
-    // Move the container to the burrow
-    const centerX = app.renderer.width / 2;
-    const centerY = app.renderer.height / 2;
-    gameContainer.x = centerX - burrowPos.x;
-    gameContainer.y = centerY - burrowPos.y;
-
-    const gameServices = new GameServices(dataMap, assets, gameContainer)
+    console.log(ecs)
+    gameServices.containers.centerGameContainer(app.renderer, burrowPos)
 
     app.ticker.speed = 0.5
   
@@ -67,8 +55,8 @@ import { GameServices } from './core/GameServices';
     });
 
     // Input event listeners
-    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, gameContainer));
+    app.canvas.addEventListener("wheel", (evt) => onScrollFn(evt, gameServices.containers.gameContainer));
     app.canvas.addEventListener("mousedown", (evt) => onMouseDownFn(evt));
-    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, gameContainer));
-    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, gameContainer));
+    app.canvas.addEventListener("mousemove", (evt) => onMouseMoveFn(evt, gameServices.containers.gameContainer));
+    app.canvas.addEventListener("mouseup", (evt) => onMouseUpFn(evt, gameServices.containers.gameContainer));
 })();

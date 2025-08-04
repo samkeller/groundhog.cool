@@ -15,12 +15,12 @@ export class GameServices {
     public readonly world: WorldService;
     public readonly containers: ContainerService
 
-    constructor(map: TileMap, gameAssets: GameAssets, rootContainer: Container) {
+    constructor(map: TileMap, gameAssets: GameAssets, stageContainer: Container) {
         // Initialisation des services spécialisés
         this.spatial = new SpatialService();
         this.assets = new AssetService(gameAssets);
         this.world = new WorldService(map);
-        this.containers = new ContainerService(rootContainer)
+        this.containers = new ContainerService(stageContainer)
 
         // Initialisation de l'index spatial à partir de la carte
         this.spatial.initializeFromTileMap(map);
