@@ -1,9 +1,6 @@
 import { TileMap, Tile } from "../types/TileMap";
 import { PixelPosition, TilePosition } from "../types/Position";
 import { pixelToTile } from "../utils/PositionUtils";
-import { ECS } from "../ECS";
-import getTestMap from "../maps/TestMap1";
-import { GameAssets } from "../utils/AssetLoader";
 import PathfindingUtils from "../utils/PathfindingUtils";
 
 /**
@@ -52,29 +49,46 @@ export class WorldService {
     }
 
     /**
-     * Récupère la hauteur du terrain à une position donnée.
+     * Calcule la prochaine position à partir d'une position, d'une rotation et d'une vitesse.
      */
-    getHeightAt(position: PixelPosition): number {
-        const tile = this.getTileAtPixel(position);
-        return tile?.height ?? 0;
-    }
-
-    /**
-     * Récupère les dimensions de la carte.
-     */
-    getDimensions(): { width: number; height: number } {
+    getNextPosition(fromPosition: PixelPosition, rotation: number, speed: number): PixelPosition {
+        // Décalage de -90° pour que 0° = haut
+        const rad = (rotation - 90) * Math.PI / 180;
         return {
-            width: this.map[0]?.length ?? 0,
-            height: this.map.length
+            x: fromPosition.x + Math.cos(rad) * speed,
+            y: fromPosition.y + Math.sin(rad) * speed
         };
     }
 
     /**
-     * Récupère la carte complète (pour compatibilité avec l'ancien code).
-     * À terme, cette méthode devrait être utilisée avec parcimonie.
+     * Tente de trouver une direction valide pour se déplacer.
+     * Utilise la propriété walkable des tuiles qui est calculée lors de la génération de la carte.
      */
-    getMap(): TileMap {
-        return this.map;
+    findValidDirection(position: PixelPosition, speed: number, rotation: number): {
+        nextDirection: number,
+        nextPosition: PixelPosition
+    } | undefined {
+        const MAX_LOOPS = 10;
+        let loops = 0;
+        let nextDirection = rotation;
+        const increment = 360 / MAX_LOOPS;
+
+        while (loops < MAX_LOOPS) {
+            const testNext = this.getNextPosition(position, nextDirection, speed);
+            
+            if (this.isWalkable(testNext)) {
+                return {
+                    nextDirection: nextDirection,
+                    nextPosition: testNext
+                };
+            }
+            
+            nextDirection = (nextDirection + increment) % 360;
+            loops++;
+        }
+
+        // Aucun mouvement possible
+        return undefined;
     }
 
 }

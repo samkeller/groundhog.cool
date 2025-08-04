@@ -1,7 +1,7 @@
 import perlin from "perlin-noise";
 import { TileMap, Tile } from "../types/TileMap";
 import { GameAssets } from "../utils/AssetLoader";
-import { MOUNTAIN_HEIGHT, TILE_SIZE, WATER_HEIGHT } from "./TerrainVariables";
+import { IS_HEIGHT_WALKABLE, MOUNTAIN_HEIGHT, TILE_SIZE, WATER_HEIGHT } from "./TerrainVariables";
 import { ECS } from "../ECS";
 import { createBurrow } from "../factories/BurrowFactory";
 import { createTree } from "../factories/TreeFactory";
@@ -25,7 +25,7 @@ export default (async (assets: GameAssets): Promise<[ECS, TileMap]> => {
             const height = per[y * gridWidth + x]
             const cellData: Tile = {
                 height: height,
-                walkable: height > WATER_HEIGHT && height < MOUNTAIN_HEIGHT,
+                walkable: IS_HEIGHT_WALKABLE(height),
                 position: { x, y },
                 component: null
             }
