@@ -1,5 +1,6 @@
 import { Color } from "pixi.js";
 import { Component } from "../ECS";
+import Colors from "../utils/Colors";
 
 export class BarComponent implements Component {
     constructor(
@@ -12,18 +13,14 @@ export class BarComponent implements Component {
 
     public color: Color;
 
-    private colors = {
-        yellow: new Color("#ffd449"),
-        green: new Color("#548c2f")
-    }
     
     private getColorByType(type: "energy" | "foodStock"): Color {
         switch (type) {
             case "energy":
-                return this.colors.yellow; // Jaune pour l'énergie'
+                return Colors.yellow; // Jaune pour l'énergie'
             case "foodStock":
             default:
-                return this.colors.green; // Vert pour la nourriture
+                return Colors.green; // Vert pour la nourriture
         }
     }
 
