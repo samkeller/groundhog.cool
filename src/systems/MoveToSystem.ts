@@ -3,13 +3,12 @@ import PositionComponent from "../components/PositionComponent";
 import MoveToIntentComponent from "../components/intents/MoveToIntentComponent";
 import { TileMap } from "../types/TileMap";
 import CanMoveComponent from "../components/CanMoveComponent";
-import PathfindingUtils from "../utils/PathfindingUtils";
 import PathComponent from "../components/PathComponent";
 import { positionsAreEqual } from "../utils/PathUtils";
+import PathfindingUtils from "../utils/PathfindingUtils";
 
-export default function MoveToSystem(ecs: ECS, map: TileMap) {
+export default function MoveToSystem(ecs: ECS, pathFindingUtils: PathfindingUtils) {
     // Instanciation unique de PathfindingUtils pour ce tick
-    const pathfinder = new PathfindingUtils(map);
     const entities = ecs.getEntitiesWith(PositionComponent, MoveToIntentComponent, CanMoveComponent);
 
     for (const e of entities) {
@@ -37,7 +36,7 @@ export default function MoveToSystem(ecs: ECS, map: TileMap) {
             );
 
         if (shouldRecalculatePath) {
-            const pathSteps = pathfinder.getTilesPathFinding(positionComponent, moveToPosition);
+            const pathSteps = pathFindingUtils.getTilesPathFinding(positionComponent, moveToPosition);
             if (!pathSteps || pathSteps.length === 0) {
                 // Pas de chemin valide !
                 continue;

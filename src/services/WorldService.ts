@@ -4,13 +4,17 @@ import { pixelToTile } from "../utils/PositionUtils";
 import { ECS } from "../ECS";
 import getTestMap from "../maps/TestMap1";
 import { GameAssets } from "../utils/AssetLoader";
+import PathfindingUtils from "../utils/PathfindingUtils";
 
 /**
  * Service dédié à la gestion de la carte et du monde de jeu.
  * Remplace la logique map du TickContext pour appliquer le principe de responsabilité unique.
  */
 export class WorldService {
-    constructor(private map: TileMap) { }
+    public pathFindingUtils: PathfindingUtils
+    constructor(private map: TileMap) { 
+        this.pathFindingUtils = new PathfindingUtils(map)
+    }
 
     /**
      * Récupère une tuile à partir de sa position en coordonnées de tuile.
