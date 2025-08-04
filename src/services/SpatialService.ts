@@ -77,15 +77,6 @@ export class SpatialService {
     }
 
     /**
-     * Récupère les entités exactement à une position donnée.
-     */
-    getAtPosition(position: PixelPosition): Entity[] {
-        const key = this.buildSpatialKey(position);
-        const entitiesAtPosition = this.spatialIndex.get(key);
-        return entitiesAtPosition ? Array.from(entitiesAtPosition) : [];
-    }
-
-    /**
      * Initialise l'index spatial à partir d'une carte de tuiles.
      * Appelé une seule fois au démarrage.
      */

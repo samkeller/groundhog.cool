@@ -54,7 +54,7 @@ export function MoveSystem(ecs: ECS, map: TileMap, spatialService: SpatialServic
     // Nettoyer l'intention après application
     ecs.removeComponent(e, MoveIntentComponent);
 
-    // Mise à jour de l'index spatial via le service dédié
+    // Mise à jour de l'index spatial
     spatialService.update(e, posCopy, result.nextPosition);
   }
 }

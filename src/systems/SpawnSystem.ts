@@ -24,7 +24,7 @@ export function SpawnSystem(ecs: ECS, assetService: AssetService, spatialService
                 spawnIntent.ownerId
             );
 
-            // Enregistrement via le service spatial dédié
+            // Enregistrement via le service spatial
             spatialService.register(created, spawnIntent.at);
             ecs.removeComponent(e, SpawnIntentComponent);
         }
