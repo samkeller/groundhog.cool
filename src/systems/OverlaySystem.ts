@@ -92,7 +92,6 @@ function createStatsPanel(): Container {
     const groundhogText = new Text({ text: '', style: statStyle });
     groundhogText.x = 20;
     groundhogText.y = 45;
-    groundhogText.style.fill = Colors.dark
     groundhogText.label = OVERLAY_LABELS.groundhogText;
     panel.addChild(groundhogText);
 
@@ -105,7 +104,6 @@ function createStatsPanel(): Container {
     const foodText = new Text({ text: '', style: statStyle });
     foodText.x = 20;
     foodText.y = 89;
-    foodText.style.fill = Colors.dark
     foodText.label = OVERLAY_LABELS.foodText;
     panel.addChild(foodText);
 
@@ -120,10 +118,6 @@ function updateStatsPanel(panel: Container, groundhogCount: number, nextSpawnCos
     // Mise à jour avec des icônes et couleurs
     groundhogText.text = `🦫 Groundhogs: ${groundhogCount}`;
 
-    // Couleur différente selon si on peut se permettre le prochain spawn
-    const canAfford = burrowFood >= nextSpawnCost;
-    const costColor = canAfford ? Colors.green : Colors.light;
-    costText.style = new TextStyle({ ...costText.style, fill: costColor });
     costText.text = `💰 Next spawn cost: ${nextSpawnCost}`;
 
     // Couleur de la nourriture selon la quantité
