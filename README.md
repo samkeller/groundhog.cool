@@ -1,3 +1,4 @@
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/samkeller/groundhog.cool?utm_source=oss&utm_medium=github&utm_campaign=samkeller%2Fgroundhog.cool&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 ## groundhogs.cool (ts version)
 
 groundhogs.cool-ts est un jeu de simulation en TypeScript utilisant PixiJS pour l'affichage 2D. Le joueur contrôle une colonie de marmottes (groundhogs) qui peuvent se déplacer, consommer de l'énergie, et se reproduire à partir d'un terrier (burrow). Le terrain est généré procéduralement avec du bruit de Perlin et contient différents types de tuiles (herbe, eau, montagne) ainsi que des arbres générant de la nourriture.
