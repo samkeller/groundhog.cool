@@ -40,7 +40,7 @@ function runResolutionSystems(ecs: ECS, gameServices: GameServices) {
 }
 
 function runDrawSystems(ecs: ECS, gameServices: GameServices) {
-    DrawSystem(ecs, gameServices.containers.objectsContainer);
+    DrawSystem(ecs, gameServices.containers);
     BarRenderSystem(ecs, gameServices.containers, gameServices.assets)
     CooldownSystem(ecs)
 }
