@@ -1,5 +1,5 @@
 import { GameAssets } from "../utils/AssetLoader";
-import { GraphicsContext, Texture } from "pixi.js";
+import { BindableTexture, GraphicsContext, Texture } from "pixi.js";
 
 /**
  * Service dédié à la gestion des assets (textures, icônes, sons).
@@ -10,9 +10,9 @@ export class AssetService {
     /**
      * Récupère une texture par nom.
      */
-    getTexture(name: keyof GameAssets): Texture {
+    getTexture(name: keyof Omit<GameAssets, "icons">): Texture | BindableTexture | GraphicsContext {
         const texture = this.assets[name];
-        if (!texture || !(texture instanceof Texture)) {
+        if (!texture) {
             throw new Error(`Texture '${name}' not found or invalid`);
         }
         return texture;

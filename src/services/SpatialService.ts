@@ -56,6 +56,7 @@ export class SpatialService {
      * Récupère les entités proches d'une position donnée.
      * Pour l'instant, on garde la même logique que l'original, 
      * mais cela pourra être optimisé plus tard.
+     * TODO: Optimisation future
      */
     getNearby(position: PixelPosition, range: number = this.VISION_RANGE): Entity[] {
         const entities: Entity[] = [];

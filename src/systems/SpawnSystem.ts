@@ -1,3 +1,4 @@
+import { Texture } from "pixi.js";
 import SpawnIntentComponent from "../components/intents/SpawnIntentComponent";
 import { ECS, Entity } from "../ECS";
 import { createGroundhog } from "../factories/GroundhogFactory";
@@ -14,12 +15,12 @@ export function SpawnSystem(ecs: ECS, assetService: AssetService, spatialService
         if (!spawnIntent) return;
         
         if (spawnIntent.entity === "groundhog") {
-            const groundhogTexture = assetService.getTexture('groundhog');
+            const groundhogTexture = assetService.getTexture('groundhog') as Texture;
             
             created = createGroundhog(
                 ecs,
                 spawnIntent.at,
-                groundhogTexture,
+                groundhogTexture ,
                 spawnIntent.fromBurrow,
                 spawnIntent.ownerId
             );

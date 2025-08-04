@@ -8,8 +8,9 @@ import PathfindingUtils from "../utils/PathfindingUtils";
  * Remplace la logique map du TickContext pour appliquer le principe de responsabilité unique.
  */
 export class WorldService {
-    public pathFindingUtils: PathfindingUtils
-    constructor(private map: TileMap) { 
+    private pathFindingUtils: PathfindingUtils
+
+    constructor(private map: TileMap) {
         this.pathFindingUtils = new PathfindingUtils(map)
     }
 
@@ -75,20 +76,27 @@ export class WorldService {
 
         while (loops < MAX_LOOPS) {
             const testNext = this.getNextPosition(position, nextDirection, speed);
-            
+
             if (this.isWalkable(testNext)) {
                 return {
                     nextDirection: nextDirection,
                     nextPosition: testNext
                 };
             }
-            
+
             nextDirection = (nextDirection + increment) % 360;
             loops++;
         }
 
         // Aucun mouvement possible
         return undefined;
+    }
+
+    /**
+     * Calcule un chemin entre deux positions en pixels.
+     */
+    getPathBetween(from: PixelPosition, to: PixelPosition): PixelPosition[] {
+        return this.pathFindingUtils.getTilesPathFinding(from, to);
     }
 
 }

@@ -31,7 +31,7 @@ function runIntentSystems(ecs: ECS) {
 }
 
 function runResolutionSystems(ecs: ECS, gameServices: GameServices) {
-    MoveToSystem(ecs, gameServices.world.pathFindingUtils);
+    MoveToSystem(ecs, gameServices.world);
     PathSystem(ecs);
     MoveSystem(ecs, gameServices.world, gameServices.spatial);
     SpawnSystem(ecs, gameServices.assets, gameServices.spatial);

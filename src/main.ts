@@ -1,15 +1,12 @@
 import { Application, Container } from 'pixi.js';
 import { onMouseDownFn, onMouseMoveFn, onMouseUpFn, onScrollFn } from "./mouseFunctions";
-import MapDraw from './maps/MapDraw';
 import BurrowTagComponent from './components/tags/BurrowTagComponent';
 import PositionComponent from './components/PositionComponent';
 import { createPlayer } from './factories/PlayerFactory';
 import OwnedByComponent from './components/relations/OwnedByComponent';
 import getTestMap from './maps/TestMap1';
-import { loadAssets } from './utils/AssetLoader';
 import RunSystems from './systems/Systems';
-import { GameServices } from './services/GameServices';
-import { WorldService } from './services/WorldService';
+import BuildGameServices from './services/AsyncBuildGameServices';
 
 (async () => {
     // Déjà initialisé, on ne fait rien
@@ -24,12 +21,8 @@ import { WorldService } from './services/WorldService';
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
 
-    // Chargement des assets
-    const assets = await loadAssets();
-    const [ecs, dataMap] = await getTestMap(assets) // DataMap = tiles !
-    
-    const gameServices = new GameServices(dataMap, assets, app.stage)
-  
+    const [ecs, gameServices] = await BuildGameServices(app.stage)
+
     // Ajout du joueur comme entité ECS
     const playerEntity = createPlayer(ecs);
 

@@ -8,8 +8,8 @@ import { PixelPosition } from "../types/Position";
 export class ContainerService {
     public stageContainer!: Container;
     public gameContainer!: Container;
-    public mapContainer!: Container;
-    public objectsContainer!: Container;
+    public mapContainer?: Container;
+    public objectsContainer?: Container;
 
     constructor(stageContainer: Container) {
         this.stageContainer = stageContainer;
@@ -46,14 +46,21 @@ export class ContainerService {
     }
 
     public getEntityContainer(e: Entity) {
+        this.throwIfNotInitCorrectly()
         const label = `entity-${e}`
-        let childContainer = this.objectsContainer.getChildByLabel(label)
+        let childContainer = this.objectsContainer!.getChildByLabel(label)
 
         if (!childContainer) {
             childContainer = new Container();
             childContainer.label = label;
-            this.objectsContainer.addChild(childContainer)
+            this.objectsContainer!.addChild(childContainer)
         }
         return childContainer
+    }
+
+    private throwIfNotInitCorrectly() {
+        if (!this.objectsContainer || !this.mapContainer) {
+            throw new Error("ContainerService not properly initalized")
+        }
     }
 }

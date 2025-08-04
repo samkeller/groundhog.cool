@@ -24,7 +24,6 @@ export class GameServices {
 
         // Initialisation de l'index spatial à partir de la carte
         this.spatial.initializeFromTileMap(map);
-        this.containers.drawMap(map, gameAssets)
     }
 
 }
