@@ -11,6 +11,7 @@ import PositionComponent from "../components/PositionComponent";
 import FoodStockComponent from "../components/FoodStockComponent";
 import { positionsAreEqual } from "../utils/PathUtils";
 import CooldownComponent from "../components/CooldownComponent";
+import MemoryComponent from "../components/MemoryComponent";
 
 export default function GroundhogSystem(ecs: ECS) {
     const groundhogs: Entity[] = ecs.getEntitiesWith(GroundhogTagComponent);
@@ -125,7 +126,14 @@ export default function GroundhogSystem(ecs: ECS) {
 
         // X. Cherche un arbre
         const visionComponent = ecs.getComponent(e, VisionComponent)!;
-        for (const targetId of visionComponent.visibles) {
+        const memoryComponent = ecs.getComponent(e, MemoryComponent)!;
+
+        const entitiesKnown = new Set([
+            ...visionComponent.visibles,
+            ...Array.from(memoryComponent.memories.keys()),
+        ])
+
+        for (const targetId of entitiesKnown) {
             const isTreeComponent = ecs.getComponent(targetId, TreeTagComponent);
             // Je vois un arbre !
             if (isTreeComponent) {

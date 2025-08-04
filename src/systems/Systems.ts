@@ -16,6 +16,7 @@ import EnergySystem from "./EnergySystem";
 import OverlaySystem from "./OverlaySystem";
 import { GameServices } from "../services/GameServices";
 import { Application } from "pixi.js";
+import MemorySystem from "./MemorySystem";
 
 export default function RunSystems(
     ecs: ECS,
@@ -39,11 +40,12 @@ function runResolutionSystems(ecs: ECS, gameServices: GameServices) {
     SpawnSystem(ecs, gameServices.assets, gameServices.spatial);
     VisionSystem(ecs, gameServices.spatial);
     EnergySystem(ecs);
+    CooldownSystem(ecs);
+    MemorySystem(ecs);
 }
 
 function runDrawSystems(ecs: ECS, gameServices: GameServices) {
     DrawSystem(ecs, gameServices.application);
     BarRenderSystem(ecs, gameServices.application, gameServices.assets);
     OverlaySystem(ecs, gameServices.application);
-    CooldownSystem(ecs);
 }
