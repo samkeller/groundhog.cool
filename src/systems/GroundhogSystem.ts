@@ -138,9 +138,13 @@ export default function GroundhogSystem(ecs: ECS) {
             // Je vois un arbre !
             if (isTreeComponent) {
                 const treePositionComponent = ecs.getComponent(targetId, PositionComponent)!;
+                const treeFoodStockComponent = ecs.getComponent(targetId, FoodStockComponent)!;
 
+                const foodMissing = foodStockComponent.amountMax - foodStockComponent.amount
+                
                 if (
                     !positionsAreEqual(positionComponent, treePositionComponent)
+                    && treeFoodStockComponent.amount > foodMissing
                 ) {
 
                     logger(e, `J'ai trouvé un arbre en [x:${treePositionComponent.x}, y:${treePositionComponent.y}], j'y go !`)

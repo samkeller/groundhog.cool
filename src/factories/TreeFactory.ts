@@ -7,6 +7,7 @@ import { Sprite, Texture } from "pixi.js";
 import { TILE_SIZE } from "../maps/TerrainVariables";
 import { randomFloatFromInterval } from "../utils/MathUtils";
 import { PixelPosition } from "../types/Position";
+import { BarComponent } from "../components/BarComponent";
 
 export function createTree(ecs: ECS, position: PixelPosition, texture: Texture) {
 
@@ -19,6 +20,7 @@ export function createTree(ecs: ECS, position: PixelPosition, texture: Texture) 
     }));
     ecs.addComponent(entity, new DrawableComponent(createSpriteForTile(texture)));
     ecs.addComponent(entity, new FoodStockComponent(0, 200));
+    ecs.addComponent(entity, new BarComponent(0, 200, "foodStock"))
     return entity;
 }
 

@@ -1,5 +1,5 @@
 import { Container, Graphics } from "pixi.js";
-import { ECS } from "../ECS";
+import { ECS, Entity } from "../ECS";
 import { TILE_SIZE } from "../maps/TerrainVariables";
 import { BarComponent } from "../components/BarComponent";
 import CooldownComponent from "../components/CooldownComponent";
@@ -7,6 +7,7 @@ import PositionComponent from "../components/PositionComponent";
 import DrawableComponent from "../components/DrawableComponent";
 import { AssetService } from "../services/AssetService";
 import { ApplicationService } from "../services/ApplicationService";
+import TreeTagComponent from "../components/tags/TreeTagComponent";
 
 const BAR_WIDTH = TILE_SIZE * 0.6;
 const BAR_HEIGHT = 2;
@@ -23,7 +24,7 @@ export default function BarRenderSystem(
     assetsService: AssetService
 ) {
     const entities = ecs.getEntitiesWith(BarComponent, PositionComponent, DrawableComponent);
-    
+
     for (const e of entities) {
         const bar = ecs.getComponent(e, BarComponent)!;
 
@@ -47,21 +48,7 @@ export default function BarRenderSystem(
 
         // Mise à jour du cooldown
 
-        const cdComponent = ecs.getComponent(e, CooldownComponent);
-        const cooldown = group.getChildByLabel(CHILD_LABELS.cooldown) as Graphics;
-
-        if (cdComponent) {
-            const cooldownRatio = cdComponent.remainingTime / cdComponent.initialTime;
-            cooldown.visible = true;
-
-            cooldown
-                .clear()
-                .rect(0, 0, cooldownRatio * BAR_WIDTH, 0.5)
-                .fill(0x9999ff);
-
-        } else {
-            cooldown.visible = false;
-        }
+        handleCooldown(e, group);
 
     }
 
@@ -70,7 +57,7 @@ export default function BarRenderSystem(
 
         const group = new Container();
         group.position.set(-drawable.sprite.width / 2, -TILE_SIZE * 0.5); // position fixe au-dessus de l'entité
-
+        group.zIndex = 10
         group.label = `entity-${e}-BAR-GROUP`;
 
         const iconGraphicsContext = bar.type === "energy"
@@ -109,5 +96,24 @@ export default function BarRenderSystem(
         group.addChild(cooldown);
 
         return group;
+    }
+
+
+    function handleCooldown(e: Entity, groupContainer: Container) {
+        const cooldownComponent = ecs.getComponent(e, CooldownComponent);
+        const cooldownElement = groupContainer.getChildByLabel(CHILD_LABELS.cooldown) as Graphics;
+
+        if (cooldownComponent) {
+            const cooldownRatio = cooldownComponent.remainingTime / cooldownComponent.initialTime;
+            cooldownElement.visible = true;
+
+            cooldownElement
+                .clear()
+                .rect(0, 0, cooldownRatio * BAR_WIDTH, 0.5)
+                .fill(0x9999ff);
+
+        } else {
+            cooldownElement.visible = false;
+        }
     }
 }
