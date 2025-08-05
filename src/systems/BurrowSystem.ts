@@ -29,7 +29,7 @@ export default function BurrowSystem(ecs: ECS) {
         const count = marmottes.length;
 
         // 2. Calcul du coût
-        const cost = getSpawnCost(10, count);
+        const cost = getSpawnCost(20, count);
 
         if (food.amount < cost) return;
 
@@ -43,7 +43,7 @@ export default function BurrowSystem(ecs: ECS) {
             owner.ownerId
         ));
 
-        ecs.addComponent(e, new CooldownComponent(cost * 30))
+        ecs.addComponent(e, new CooldownComponent(200))
 
         // Update Bar
         const barComponent = ecs.getComponent(e, BarComponent)!;

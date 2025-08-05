@@ -113,10 +113,13 @@ export default function GroundhogSystem(ecs: ECS) {
 
                     // position-terrier3. Je cueille un arbre
                     giveFoodToStock(treeFoodStockComponent, foodStockComponent, foodToTake);
-                    ecs.addComponent(e, new CooldownComponent(500))
+                    ecs.addComponent(e, new CooldownComponent(300))
                     ecs.removeComponent(e, MoveToIntentComponent)
                     continue;
                 }
+
+                // Au cas ou
+                console.error( ecs, moveToIntentComponent, moveToIntentPosition)
                 throw new Error("vers quoi on va en fait ??")
 
             }
@@ -141,7 +144,7 @@ export default function GroundhogSystem(ecs: ECS) {
                 const treeFoodStockComponent = ecs.getComponent(targetId, FoodStockComponent)!;
 
                 const foodMissing = foodStockComponent.amountMax - foodStockComponent.amount
-                
+
                 if (
                     !positionsAreEqual(positionComponent, treePositionComponent)
                     && treeFoodStockComponent.amount > foodMissing
@@ -167,8 +170,9 @@ export default function GroundhogSystem(ecs: ECS) {
         toStock: FoodStockComponent,
         amount: number
     ) {
-        toStock.amount += amount;
-        fromStock.amount -= amount;
+        const flooredAmout = Math.floor(amount)
+        toStock.amount += flooredAmout;
+        fromStock.amount -= flooredAmout;
     }
 
     function goToTarget(

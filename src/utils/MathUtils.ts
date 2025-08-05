@@ -20,7 +20,8 @@ export function randomFloatFromInterval(min: number, max: number) {
 
 
 /**
- * Si on considère que le cout n est la somme de n-1 & n-2.
+ * SpawnCost = somme des deux derniers spawns.
+ * 10 -> 20 -> 30 -> 50 -> 80 -> 130 
  * Alors, si on ne possède que le count, on doit recalculer tout. 
  * @param base 
  * @param populationCount 
