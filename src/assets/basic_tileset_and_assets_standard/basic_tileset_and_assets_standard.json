@@ -1,0 +1,68 @@
+{"frames": {
+
+"assets_spritesheet_v2_free.png":
+{
+	"frame": {"x":1,"y":125,"w":381,"h":381},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":0,"w":381,"h":381},
+	"sourceSize": {"w":384,"h":384}
+},
+"decorations.png":
+{
+	"frame": {"x":1,"y":1,"w":36,"h":91},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":4,"w":36,"h":91},
+	"sourceSize": {"w":36,"h":96}
+},
+"dirtpath_tiles.png":
+{
+	"frame": {"x":294,"y":1,"w":124,"h":122},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":1,"w":124,"h":122},
+	"sourceSize": {"w":128,"h":128}
+},
+"fence_tiles.png":
+{
+	"frame": {"x":164,"y":1,"w":112,"h":128},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":0,"w":112,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"ground_decorations.png":
+{
+	"frame": {"x":94,"y":1,"w":68,"h":56},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":6,"w":68,"h":56},
+	"sourceSize": {"w":72,"h":72}
+},
+"terrain_tiles_v2.png":
+{
+	"frame": {"x":384,"y":259,"w":320,"h":512},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":320,"h":512},
+	"sourceSize": {"w":320,"h":512}
+},
+"water_and_island_tiles_v2.png":
+{
+	"frame": {"x":420,"y":1,"w":480,"h":256},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":480,"h":256},
+	"sourceSize": {"w":480,"h":256}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "basic_tileset_and_assets_standard.png",
+	"format": "RGBA8888",
+	"size": {"w":901,"h":580},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:a3dc93cee9f9434a35986f19e488498d:d382c10e1f819fc46946c15c8cd70ac8:586f3c3281d11a6a4dcfad0ec5b4506c$"
+}
+}
